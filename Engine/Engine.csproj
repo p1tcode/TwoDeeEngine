@@ -42,7 +42,7 @@
     <Compile Include="Objects\Draw\Layer.cs" />
     <Compile Include="Components\InputManager.cs" />
     <Compile Include="FpsCounter.cs" />
-    <Compile Include="Objects\Draw\Particle.cs" />
+    <Compile Include="Objects\Particles\Particle.cs" />
     <Compile Include="Objects\Input\Action.cs" />
     <Compile Include="Objects\Particles\ParticleEffect.cs" />
     <Compile Include="Objects\Draw\Sprite.cs" />

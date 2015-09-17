@@ -43,17 +43,17 @@ namespace Engine.Objects
         /// </summary>
         public bool Loop { get; set; }
 
-        public float StartSpeed { get; set; }
-        public float EndSpeed { get; set; }
+        public float MinInitialSpeed { get; set; }
+        public float MaxInitialSpeed { get; set; }
 
-        public float StartSize { get; set; }
-        public float EndSize { get; set; }
+        public float MinSize { get; set; }
+        public float MaxSize { get; set; }
 
-        public float StartAlpha { get; set; }
-        public float EndAlpha { get; set; }
+        public float MaxAlpha { get; set; }
+        public float MinAlpha { get; set; }
 
-        public float MinAngle { get; set; }
-        public float MaxAngle { get; set; }
+        public float MinDirection { get; set; }
+        public float MaxDirection { get; set; }
 
         public float Rotation { get; set; }
         public float RotationSpeed { get; set; }
@@ -96,14 +96,14 @@ namespace Engine.Objects
 
             // Loading default values
             Loop = true;
-            StartSpeed = 10;
-            EndSpeed = 0;
-            StartSize = 1;
-            EndSize = 0;
-            StartAlpha = 1;
-            EndAlpha = 0;
-            MinAngle = MathHelper.ToRadians(0);
-            MaxAngle = MathHelper.ToRadians(360);
+            MinInitialSpeed = 10;
+            MaxInitialSpeed = 0;
+            MinSize = 0.3f;
+            MaxSize = 1.0f;
+            MinAlpha = 0.2f;
+            MaxAlpha = 1f;
+            MinDirection = MathHelper.ToRadians(0);
+            MaxDirection = MathHelper.ToRadians(360);
             Rotation = RandomMath.Random.Next(0,359);
             RotationSpeed = 360;
             ParticlesPerSecond = 100f;
@@ -119,18 +119,19 @@ namespace Engine.Objects
             texture = content.Load<Texture2D>(@"defaultParticle");
         }
 
-        public void AddEmitter(Vector2 position, string targetLayer, bool active)
+        public void AddEmitter(ParticleEmitter emitter)
         {
-            numberOfParticles = (int)(ParticlesPerSecond * MaxTTL) + 1;
+            emitter.Effect = this;
 
-            ParticleEmitter emit = new ParticleEmitter(position, ParticlesPerSecond, targetLayer, active);
+            numberOfParticles = (int)(emitter.ParticlesPerSecond * MaxTTL) + 1;
+
             for (int i = 0; i < numberOfParticles; i++)
             {
                 Particle particle = new Particle(texture);
-                particle.Position = position;
-                emit.AddParticle(particle);                
+                emitter.AddParticle(particle);
             }
-            emitters.Add(emit);
+            
+            emitters.Add(emitter);
         }
     }
 }
