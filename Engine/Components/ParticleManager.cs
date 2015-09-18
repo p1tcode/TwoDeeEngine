@@ -16,10 +16,10 @@ namespace Engine.Components
     public class ParticleManager : GameComponent, IParticleManager
     {
         List<ParticleEffect> particleEffects = new List<ParticleEffect>();
-
+       
         #region Properties
 
-        int numberOfEffects = 0;
+        int numberOfEffects;
         public int NumberOfEffects
         {
             get
@@ -33,7 +33,7 @@ namespace Engine.Components
             }
         }
 
-        int totalEmitters = 0;
+        int totalEmitters;
         public int TotalEmitters
         {
             get
@@ -95,7 +95,10 @@ namespace Engine.Components
         public override void Update(GameTime gameTime)
         {
             // Loops through and updates all the Particle Effects
-
+            foreach (ParticleEffect effect in particleEffects)
+            {
+                effect.Update(gameTime);
+            }
             base.Update(gameTime);
         }
 

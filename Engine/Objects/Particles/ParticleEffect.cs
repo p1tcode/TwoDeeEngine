@@ -13,7 +13,7 @@ namespace Engine.Objects
 
         string name;
         ContentManager content;
-        IDrawManager drawManager;
+        Game game;
 
         Texture2D texture;
         public Texture2D Texture
@@ -59,12 +59,6 @@ namespace Engine.Objects
         public float RotationSpeed { get; set; }
 
         public Color Color { get; set; } 
-
-        /// <summary>
-        /// The amount of particles the emitter should release per second
-        /// </summary>
-        public float ParticlesPerSecond { get; set; }
-
         
         /// <summary>
         /// Minimum time for a particle to live
@@ -97,33 +91,32 @@ namespace Engine.Objects
             // Loading default values
             Loop = true;
             MinInitialSpeed = 10;
-            MaxInitialSpeed = 0;
+            MaxInitialSpeed = 10;
             MinSize = 0.3f;
-            MaxSize = 1.0f;
+            MaxSize = 0.5f;
             MinAlpha = 0.2f;
             MaxAlpha = 1f;
-            MinDirection = MathHelper.ToRadians(0);
-            MaxDirection = MathHelper.ToRadians(360);
-            Rotation = RandomMath.Random.Next(0,359);
-            RotationSpeed = 360;
-            ParticlesPerSecond = 100f;
-            MinTTL = 1.5f;
-            MaxTTL = 3f;
+            MinDirection = 0;
+            MaxDirection = 360;
+            Rotation = 0;
+            RotationSpeed = 0;
+            MinTTL = 10f;
+            MaxTTL = 10f;
         }
 
         public void Initialize(Game game)
         {
             content = (ContentManager)game.Services.GetService(typeof(ContentManager));
-            drawManager = (IDrawManager)game.Services.GetService(typeof(IDrawManager));
+            this.game = game;
 
             texture = content.Load<Texture2D>(@"defaultParticle");
         }
 
         public void AddEmitter(ParticleEmitter emitter)
         {
-            emitter.Effect = this;
+            emitter.Initialize(game, this);
 
-            numberOfParticles = (int)(emitter.ParticlesPerSecond * MaxTTL) + 1;
+            numberOfParticles = (int)((emitter.ParticlesPerSecond * MaxTTL));
 
             for (int i = 0; i < numberOfParticles; i++)
             {
@@ -132,6 +125,14 @@ namespace Engine.Objects
             }
             
             emitters.Add(emitter);
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            foreach (ParticleEmitter emitter in emitters)
+            {
+                emitter.Update(gameTime);
+            }
         }
     }
 }

@@ -121,7 +121,7 @@ namespace Prototype
             inputManager.AddAction("MouseRightClick");
             inputManager["MouseRightClick"].Add(MouseButtons.Right);
 
-            emitter = new ParticleEmitter(new Vector2(200, 200), 100, "Player", true);
+            emitter = new ParticleEmitter(new Vector2(200, 200), 50, "Player", true);
             particleManager["Fire"].AddEmitter(emitter);
 
             // TODO: use this.Content to load your game content here
