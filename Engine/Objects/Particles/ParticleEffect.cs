@@ -15,15 +15,6 @@ namespace Engine.Objects
         ContentManager content;
         Game game;
 
-        Texture2D texture;
-        public Texture2D Texture
-        {
-            set
-            {
-                this.texture = value;
-            }
-        }
-
         int numberOfEmitters = 0;
         public int NumberOfEmitters
         {
@@ -58,8 +49,10 @@ namespace Engine.Objects
         public float Rotation { get; set; }
         public float RotationSpeed { get; set; }
 
-        public Color Color { get; set; } 
-        
+        public Color Color { get; set; }
+
+        public Texture2D Texture { get; set; }
+
         /// <summary>
         /// Minimum time for a particle to live
         /// </summary>
@@ -68,8 +61,6 @@ namespace Engine.Objects
         /// Maximum time for a particle to live
         /// </summary>
         public float MaxTTL { get; set; }
-
-        public int numberOfParticles;
 
         #region Properties
 
@@ -100,8 +91,8 @@ namespace Engine.Objects
             MaxDirection = 360;
             Rotation = 0;
             RotationSpeed = 0;
-            MinTTL = 10f;
-            MaxTTL = 10f;
+            MinTTL = 1.5f;
+            MaxTTL = 3f;
         }
 
         public void Initialize(Game game)
@@ -109,18 +100,16 @@ namespace Engine.Objects
             content = (ContentManager)game.Services.GetService(typeof(ContentManager));
             this.game = game;
 
-            texture = content.Load<Texture2D>(@"defaultParticle");
+            Texture = content.Load<Texture2D>(@"defaultParticle");
         }
 
         public void AddEmitter(ParticleEmitter emitter)
         {
             emitter.Initialize(game, this);
 
-            numberOfParticles = (int)((emitter.ParticlesPerSecond * MaxTTL));
-
-            for (int i = 0; i < numberOfParticles; i++)
+            for (int i = 0; i < emitter.ParticlesPerSecond; i++)
             {
-                Particle particle = new Particle(texture);
+                Particle particle = new Particle(Texture);
                 emitter.AddParticle(particle);
             }
             

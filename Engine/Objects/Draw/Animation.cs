@@ -32,9 +32,9 @@ namespace Engine.Objects
             this.Origin = new Vector2(tileWidth / 2, tileHeight / 2);
         }
 
-        public override void Update(float elapsedTime)
+        public override void Update(GameTime gameTime)
         {
-            timeToNewFrame -= elapsedTime;
+            timeToNewFrame -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (timeToNewFrame < 0)
             {
@@ -61,7 +61,7 @@ namespace Engine.Objects
                 SourceRect = new Rectangle(colPosition * (int)TileSize.X, rowPosition * (int)TileSize.Y, (int)TileSize.X, (int)TileSize.Y);
             }
 
-            base.Update(elapsedTime);
+            base.Update(gameTime);
         }
         
     }

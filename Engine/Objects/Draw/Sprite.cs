@@ -50,6 +50,15 @@ namespace Engine.Objects
         /// </summary>
         public int Layer;
 
+        /// <summary>
+        /// If an sprites is alive and active.
+        /// </summary>
+        public bool Alive;
+
+        /// <summary>
+        /// A unique searchable index.
+        /// </summary>
+        public int Index;
 
         public Sprite(Texture2D texture)
         {
@@ -60,10 +69,11 @@ namespace Engine.Objects
             this.Rotation = 0;
             this.Origin = new Vector2(texture.Width / 2, texture.Height / 2);
             this.Scale = Vector2.One;
-            this.SpriteEffect = SpriteEffects.None;           
+            this.SpriteEffect = SpriteEffects.None;
+            this.Alive = true;      
         }
 
-        public virtual void Update(float elapsedTime) { }
+        public virtual void Update(GameTime gameTime) { }
 
         public virtual void Draw(SpriteBatch spriteBatch)
         {

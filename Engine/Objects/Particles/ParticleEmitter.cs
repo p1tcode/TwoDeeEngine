@@ -27,6 +27,29 @@ namespace Engine.Objects
         public ParticleEffect Effect;
         IDrawManager drawManager;
 
+        /// <summary>
+        /// Return the number of particles in the current emitter
+        /// </summary>
+        public int NumbersOfParticles
+        {
+            get
+            {
+                return particles.Count;
+            }
+        }
+        /// <summary>
+        /// Return the number of free particles in the current emitter
+        /// </summary>
+        public int NumbersOfFreeParticles
+        {
+            get
+            {
+                return freeParticles.Count;
+            }
+        }
+
+
+
         public ParticleEmitter(Vector2 position, int particlesPerSecond, string targetLayer, bool active)
         {
             Position = position;
@@ -43,12 +66,20 @@ namespace Engine.Objects
             drawManager = (IDrawManager)game.Services.GetService(typeof(IDrawManager));
         }
 
+        /// <summary>
+        /// Add particles to the particle list and queue them.
+        /// </summary>
+        /// <param name="p"></param>
         public void AddParticle(Particle p)
         {
             particles.Add(p);
             freeParticles.Enqueue(p);
         }
 
+        /// <summary>
+        /// Initialize a particle and release it.
+        /// </summary>
+        /// <param name="p"></param>
         public void InitializeParticle(Particle p)
         {
             p.Position = Position;
@@ -57,25 +88,22 @@ namespace Engine.Objects
             p.Scale = new Vector2(RandomMath.RandomBetween(Effect.MinSize, Effect.MaxSize));
             p.Alive = true;
             p.TimeToLive = RandomMath.RandomBetween(Effect.MinTTL, Effect.MaxTTL);
-            drawManager[TargetLayer].Add(p);
         }
 
+
+        /// <summary>
+        /// Update the list of particles that are alive, and requeue dead particles.
+        /// </summary>
+        /// <param name="gameTime"></param>
         public void Update(GameTime gameTime)
         {
-            timeSinceLastParticle -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (timeSinceLastParticle <= 0)
-            {
-                Particle p = freeParticles.Dequeue();
-                InitializeParticle(p);
-                timeSinceLastParticle = TimeBetweenParticles;
-            }
-
+            // Update particles that are alive and remove dead particles.
             foreach (Particle p in particles)
             {
                 if (p.Alive)
                 {
-                    p.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+                    p.Update(gameTime);
 
                     if (!p.Alive)
                     {
@@ -83,6 +111,25 @@ namespace Engine.Objects
                         freeParticles.Enqueue(p);
                     }
                 }
+            }
+
+            // Check if its time to release a new particle
+            timeSinceLastParticle -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (timeSinceLastParticle <= 0)
+            {
+                if (freeParticles.Count == 0)
+                {
+                    for (int i = 0; i < 10; i++)
+                    {
+                        Particle newP = new Particle(Effect.Texture);
+                        AddParticle(newP);
+                    }
+                }
+                Particle p = freeParticles.Dequeue();
+                InitializeParticle(p);
+                drawManager[TargetLayer].Add(p);
+                timeSinceLastParticle = TimeBetweenParticles;
             }
 
         }

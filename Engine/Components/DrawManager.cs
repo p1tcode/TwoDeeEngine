@@ -102,7 +102,7 @@ namespace Engine.Components
         {
             foreach (Layer layer in layers)
             {
-                layer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+                layer.Update(gameTime);
             }
             
             base.Update(gameTime);

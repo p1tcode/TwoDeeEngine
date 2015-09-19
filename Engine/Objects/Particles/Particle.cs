@@ -10,17 +10,18 @@ namespace Engine.Objects
         public Vector2 Acceleration;
         public Vector2 Velocity;
         public Vector2 Direction;
-        public bool Alive;
+
+        float elapsedTime;
 
         public float TimeToLive;
 
         public Particle(Texture2D texture) : base(texture)
         {
-            Acceleration = Vector2.One;
         }
 
-        public override void Update(float elapsedTime)
+        public override void Update(GameTime gameTime)
         {
+            elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             TimeToLive -= elapsedTime;
 
@@ -31,7 +32,7 @@ namespace Engine.Objects
 
             Position += Velocity * elapsedTime;
 
-            base.Update(elapsedTime);
+            base.Update(gameTime);
         }
     }
 }

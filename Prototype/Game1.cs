@@ -121,8 +121,11 @@ namespace Prototype
             inputManager.AddAction("MouseRightClick");
             inputManager["MouseRightClick"].Add(MouseButtons.Right);
 
-            emitter = new ParticleEmitter(new Vector2(200, 200), 50, "Player", true);
+            emitter = new ParticleEmitter(new Vector2(200, 200), 1000, "Player", true);
             particleManager["Fire"].AddEmitter(emitter);
+            particleManager["Fire"].MaxInitialSpeed = 50;
+            particleManager["Fire"].MinTTL = 0.5f;
+            particleManager["Fire"].MaxTTL = 1f;
 
             // TODO: use this.Content to load your game content here
         }
@@ -187,14 +190,18 @@ namespace Prototype
 
             //camera.SetTarget(sprite.Position);
 
-            debugText.OutputText = String.Format("Sprites: {0} \nMousePos: {1}, {2} \nVisibleSprites: {3} \nScrollWheelValue: {4} \nNumberOfParticleEffects: {5} \nNumberOfEmitters: {6}",
+            emitter.Position = inputManager.MouseWorldPosition;
+
+            debugText.OutputText = String.Format("Sprites: {0} \nMousePos: {1}, {2} \nVisibleSprites: {3} \nScrollWheelValue: {4} \nNumberOfParticleEffects: {5} \nNumberOfEmitters: {6}, \nNumbersOfParticles: {7}, \nNumberOfFreeParticles: {8}",
                                                     drawManager.NumberOfSprites.ToString(),
                                                     inputManager.MousePosition.X,
                                                     inputManager.MousePosition.Y,
                                                     drawManager.VisibleSprites.ToString(),
                                                     inputManager.ScrollWheelValue.ToString(),
                                                     particleManager.NumberOfEffects.ToString(),
-                                                    particleManager.TotalEmitters.ToString());
+                                                    particleManager.TotalEmitters.ToString(),
+                                                    emitter.NumbersOfParticles.ToString(),
+                                                    emitter.NumbersOfFreeParticles.ToString());
             
             // TODO: Add your update logic here
             base.Update(gameTime);

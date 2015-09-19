@@ -9,9 +9,11 @@ namespace Engine.Components
 {
     public class Layer
     {
-        List<Sprite> Sprites = new List<Sprite>();
+        List<Sprite> sprites = new List<Sprite>();
+
         List<Text> Texts = new List<Text>();
         string name;
+        int index = 0;
 
         Vector2 shadowOffset = new Vector2(2, 2);
 
@@ -30,7 +32,7 @@ namespace Engine.Components
 
         public int NumberOfSprites
         {
-            get { return Sprites.Count; }
+            get { return sprites.Count; }
         }
         
         public int NumberOfText
@@ -58,10 +60,9 @@ namespace Engine.Components
         /// <param name="sprite">The spirite to draw</param>
         public void Add(Sprite sprite)
         {
-            if (!Sprites.Contains(sprite))
-            {
-                Sprites.Add(sprite);
-            }
+            sprite.Index = index;
+            sprites.Add(sprite);
+            index++;
         }
 
         /// <summary>
@@ -70,9 +71,12 @@ namespace Engine.Components
         /// <param name="sprite"></param>
         public void Remove(Sprite sprite)
         {
-            if (Sprites.Contains(sprite))
+            for (int i = sprites.Count - 1; i >= 0; i--)
             {
-                Sprites.Remove(sprite);
+                if (sprites[i].Index == sprite.Index)
+                {
+                    sprites.RemoveAt(i);
+                }
             }
         }
 
@@ -98,11 +102,14 @@ namespace Engine.Components
         }
 
 
-        public void Update(float elapsedTime)
+        public void Update(GameTime gameTime)
         {
-            foreach (Sprite item in Sprites)
+            foreach (Sprite item in sprites)
             {
-                item.Update(elapsedTime);
+                if (item.GetType() != typeof(Particle))
+                {
+                    item.Update(gameTime);
+                }
             }
         }
 
@@ -112,12 +119,15 @@ namespace Engine.Components
 
             visibleSprites = 0;
 
-            foreach (Sprite item in Sprites)
+            foreach (Sprite item in sprites)
             {
                 if (camera.IsInView(item.Position, item.Texture))
                 {
-                    spriteBatch.Draw(item.Texture, item.Position, item.SourceRect, item.Color, item.Rotation, item.Origin, item.Scale, item.SpriteEffect, 0);
-                    visibleSprites++;
+                    if (item.Alive)
+                    {
+                        spriteBatch.Draw(item.Texture, item.Position, item.SourceRect, item.Color, item.Rotation, item.Origin, item.Scale, item.SpriteEffect, 0);
+                        visibleSprites++;
+                    }
                 }
             }
                 
