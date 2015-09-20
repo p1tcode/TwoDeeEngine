@@ -106,7 +106,7 @@ namespace Engine.Components
         {
             foreach (Sprite item in sprites)
             {
-                if (item.GetType() != typeof(Particle))
+                if (!(item is Particle))
                 {
                     item.Update(gameTime);
                 }
