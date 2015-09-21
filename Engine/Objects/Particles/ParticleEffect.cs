@@ -40,8 +40,15 @@ namespace Engine.Objects
         public float MinSize { get; set; }
         public float MaxSize { get; set; }
 
-        public float MaxAlpha { get; set; }
+        /// <summary>
+        /// Growth Per second
+        /// </summary>
+        public float MinGrowth { get; set; }
+        public float MaxGrowth { get; set; }
+
         public float MinAlpha { get; set; }
+        public float MaxAlpha { get; set; }
+        public bool FadeOut { get; set; }
 
         public float MinDirection { get; set; }
         public float MaxDirection { get; set; }
@@ -85,6 +92,8 @@ namespace Engine.Objects
             MaxInitialSpeed = 10;
             MinSize = 0.3f;
             MaxSize = 0.5f;
+            MinGrowth = 0;
+            MaxGrowth = 0;
             MinAlpha = 0.2f;
             MaxAlpha = 1f;
             MinDirection = 0;
@@ -93,6 +102,7 @@ namespace Engine.Objects
             RotationSpeed = 0;
             MinTTL = 1.5f;
             MaxTTL = 3f;
+            FadeOut = true;
         }
 
         public void Initialize(Game game)

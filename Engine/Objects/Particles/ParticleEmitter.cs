@@ -72,6 +72,7 @@ namespace Engine.Objects
         /// <param name="p"></param>
         public void AddParticle(Particle p)
         {
+            p.Alive = false;
             particles.Add(p);
             freeParticles.Enqueue(p);
         }
@@ -86,8 +87,12 @@ namespace Engine.Objects
             p.Direction = RandomMath.RandomDirection();
             p.Velocity = p.Direction * new Vector2(RandomMath.RandomBetween(Effect.MinInitialSpeed, Effect.MaxInitialSpeed));
             p.Scale = new Vector2(RandomMath.RandomBetween(Effect.MinSize, Effect.MaxSize));
+            p.Growth = RandomMath.RandomBetween(Effect.MinGrowth, Effect.MaxGrowth);
             p.Alive = true;
             p.TimeToLive = RandomMath.RandomBetween(Effect.MinTTL, Effect.MaxTTL);
+            p.RemainingTimeToLive = p.TimeToLive;
+            p.Color = Effect.Color;
+            p.OriginalColor = p.Color;
         }
 
 
@@ -103,6 +108,13 @@ namespace Engine.Objects
             {
                 if (p.Alive)
                 {
+                    if (Effect.FadeOut)
+                    {
+                        float normalizedTimeToLive = (p.RemainingTimeToLive / p.TimeToLive);
+
+                        p.Color = p.OriginalColor * normalizedTimeToLive;
+                    }
+
                     p.Update(gameTime);
 
                     if (!p.Alive)
@@ -113,25 +125,27 @@ namespace Engine.Objects
                 }
             }
 
-            // Check if its time to release a new particle
-            timeSinceLastParticle -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (timeSinceLastParticle <= 0)
+            if (Active)
             {
-                if (freeParticles.Count == 0)
-                {
-                    for (int i = 0; i < 10; i++)
-                    {
-                        Particle newP = new Particle(Effect.Texture);
-                        AddParticle(newP);
-                    }
-                }
-                Particle p = freeParticles.Dequeue();
-                InitializeParticle(p);
-                drawManager[TargetLayer].Add(p);
-                timeSinceLastParticle = TimeBetweenParticles;
-            }
+                // Check if its time to release a new particle
+                timeSinceLastParticle -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+                if (timeSinceLastParticle <= 0)
+                {
+                    if (freeParticles.Count == 0)
+                    {
+                        for (int i = 0; i < 10; i++)
+                        {
+                            Particle newP = new Particle(Effect.Texture);
+                            AddParticle(newP);
+                        }
+                    }
+                    Particle p = freeParticles.Dequeue();
+                    InitializeParticle(p);
+                    drawManager[TargetLayer].Add(p);
+                    timeSinceLastParticle = TimeBetweenParticles;
+                }
+            }
         }
     }
 }

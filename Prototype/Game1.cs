@@ -123,9 +123,13 @@ namespace Prototype
 
             emitter = new ParticleEmitter(new Vector2(200, 200), 1000, "Player", true);
             particleManager["Fire"].AddEmitter(emitter);
-            particleManager["Fire"].MaxInitialSpeed = 50;
-            particleManager["Fire"].MinTTL = 0.5f;
-            particleManager["Fire"].MaxTTL = 1f;
+            particleManager["Fire"].MinInitialSpeed = 5;
+            particleManager["Fire"].MaxInitialSpeed = 10;
+            particleManager["Fire"].MinGrowth = 0.2f;
+            particleManager["Fire"].MaxGrowth = 0.5f;
+            particleManager["Fire"].Color = Color.DarkGray;
+            particleManager["Fire"].MinTTL = 5f;
+            particleManager["Fire"].MaxTTL = 6f;
 
             // TODO: use this.Content to load your game content here
         }
@@ -180,6 +184,15 @@ namespace Prototype
                 sprite.Position += new Vector2(speed * (float)gameTime.ElapsedGameTime.TotalSeconds, 0);
             inputManager.MouseGrabSprite(sprite, "MoveItem");
             inputManager.MouseGrabWorld("MouseRightClick");
+
+            if (inputManager["MoveItem"].IsDown)
+            {
+                emitter.Active = true;
+            }
+            else
+            {
+                emitter.Active = false;
+            }
  
             sprite.Position.X += inputManager.LeftStick(PlayerIndex.One).X * (float)gameTime.ElapsedGameTime.TotalSeconds * speed;
             sprite.Position.Y += inputManager.LeftStick(PlayerIndex.One).Y * (float)gameTime.ElapsedGameTime.TotalSeconds * speed;
