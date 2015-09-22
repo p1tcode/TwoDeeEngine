@@ -13,6 +13,7 @@ namespace Engine.Objects
         public float TimeToLive;
         public float RemainingTimeToLive;
         public float Growth;
+        public float RotationSpeed;
         
         public Color OriginalColor { get; set; }
 
@@ -33,8 +34,11 @@ namespace Engine.Objects
                 Alive = false;
             }
 
+            Velocity += Acceleration * elapsedTime;
             Position += Velocity * elapsedTime;
             Scale += new Vector2(Growth * elapsedTime);
+            Rotation += RotationSpeed * elapsedTime;
+
 
             base.Update(gameTime);
         }

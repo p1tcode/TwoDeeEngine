@@ -128,8 +128,9 @@ namespace Prototype
             particleManager["Fire"].MinGrowth = 0.2f;
             particleManager["Fire"].MaxGrowth = 0.5f;
             particleManager["Fire"].Color = Color.DarkGray;
-            particleManager["Fire"].MinTTL = 5f;
+            particleManager["Fire"].MinTTL = 4f;
             particleManager["Fire"].MaxTTL = 6f;
+            particleManager["Fire"].Acceleration = new Vector2(0, 9);
 
             // TODO: use this.Content to load your game content here
         }

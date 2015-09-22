@@ -54,7 +54,10 @@ namespace Engine.Objects
         public float MaxDirection { get; set; }
 
         public float Rotation { get; set; }
-        public float RotationSpeed { get; set; }
+        public float MinRotationSpeed { get; set; }
+        public float MaxRotationSpeed { get; set; }
+
+        public Vector2 Acceleration { get; set; }
 
         public Color Color { get; set; }
 
@@ -90,6 +93,7 @@ namespace Engine.Objects
             Loop = true;
             MinInitialSpeed = 10;
             MaxInitialSpeed = 10;
+            Acceleration = Vector2.Zero;
             MinSize = 0.3f;
             MaxSize = 0.5f;
             MinGrowth = 0;
@@ -99,7 +103,8 @@ namespace Engine.Objects
             MinDirection = 0;
             MaxDirection = 360;
             Rotation = 0;
-            RotationSpeed = 0;
+            MinRotationSpeed = -45;
+            MaxRotationSpeed = +45;
             MinTTL = 1.5f;
             MaxTTL = 3f;
             FadeOut = true;
