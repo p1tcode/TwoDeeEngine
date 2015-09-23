@@ -14,6 +14,7 @@ namespace Engine.Objects
         public float RemainingTimeToLive;
         public float Growth;
         public float RotationSpeed;
+        public float InitialAlpha;
         
         public Color OriginalColor { get; set; }
 

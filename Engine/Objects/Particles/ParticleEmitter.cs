@@ -91,7 +91,8 @@ namespace Engine.Objects
             p.Alive = true;
             p.TimeToLive = RandomMath.RandomBetween(Effect.MinTTL, Effect.MaxTTL);
             p.RemainingTimeToLive = p.TimeToLive;
-            p.Color = Effect.Color;
+            p.InitialAlpha = RandomMath.RandomBetween(Effect.MinAlpha, Effect.MaxAlpha);
+            p.Color = Effect.Color * p.InitialAlpha;
             p.OriginalColor = p.Color;
             p.Rotation = RandomMath.RandomBetween(0, 360);
             p.RotationSpeed = RandomMath.RandomBetween(Effect.MinRotationSpeed, Effect.MaxRotationSpeed);

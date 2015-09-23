@@ -122,15 +122,19 @@ namespace Prototype
             inputManager["MouseRightClick"].Add(MouseButtons.Right);
 
             emitter = new ParticleEmitter(new Vector2(200, 200), 1000, "Player", true);
-            particleManager["Fire"].AddEmitter(emitter);
-            particleManager["Fire"].MinInitialSpeed = 5;
-            particleManager["Fire"].MaxInitialSpeed = 10;
-            particleManager["Fire"].MinGrowth = 0.2f;
-            particleManager["Fire"].MaxGrowth = 0.5f;
-            particleManager["Fire"].Color = Color.DarkGray;
-            particleManager["Fire"].MinTTL = 4f;
-            particleManager["Fire"].MaxTTL = 6f;
-            particleManager["Fire"].Acceleration = new Vector2(0, 9);
+            particleManager["Smoke"].AddEmitter(emitter);
+            particleManager["Smoke"].MinInitialSpeed = 5;
+            particleManager["Smoke"].MaxInitialSpeed = 10;
+            particleManager["Smoke"].MinGrowth = 0.2f;
+            particleManager["Smoke"].MaxGrowth = 0.5f;
+            particleManager["Smoke"].Color = Color.SlateGray;
+            particleManager["Smoke"].MinTTL = 4f;
+            particleManager["Smoke"].MaxTTL = 6f;
+            particleManager["Smoke"].MinAlpha = 0.2f;
+            particleManager["Smoke"].MaxAlpha = 1f;
+            particleManager["Smoke"].MinSize = 0.5f;
+            particleManager["Smoke"].MaxSize = 0.7f;
+            particleManager["Smoke"].Acceleration = new Vector2(0, 9);
 
             // TODO: use this.Content to load your game content here
         }

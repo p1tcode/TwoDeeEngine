@@ -98,7 +98,7 @@ namespace Engine.Objects
             MaxSize = 0.5f;
             MinGrowth = 0;
             MaxGrowth = 0;
-            MinAlpha = 0.2f;
+            MinAlpha = 1f;
             MaxAlpha = 1f;
             MinDirection = 0;
             MaxDirection = 360;
