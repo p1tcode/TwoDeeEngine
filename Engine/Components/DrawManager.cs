@@ -61,6 +61,7 @@ namespace Engine.Components
             AddLayer("Background");
             AddLayer("Player");
             AddLayer("Foreground");
+            AddLayer("Debug");
             AddLayer("Text");
    
         }
@@ -116,6 +117,37 @@ namespace Engine.Components
             }
 
             base.Draw(gameTime);
+        }
+
+        /// <summary>
+        /// Draws a line from point1 to point2 with an offset
+        /// </summary>
+        /// <param name="spriteBatch">The destination drawing surface</param>
+        /// <param name="point1">The first point</param>
+        /// <param name="point2">The second point</param>
+        /// <param name="color">The color to use</param>
+        /// <param name="thickness">The thickness of the line</param>
+        public void DrawLine(String Layer, Vector2 point1, Vector2 point2, Color color, float thickness)
+        {
+            Texture2D pixel;
+            Sprite line;
+
+            pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            pixel.SetData(new[] { Color.White });
+            line = new Sprite(pixel);
+
+            // calculate the distance between the two vectors
+            float distance = Vector2.Distance(point1, point2);
+            // calculate the angle between the two vectors
+            float angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+
+            line.Position = point1;
+            line.Origin = Vector2.Zero;
+            line.Scale = new Vector2(distance, thickness);
+            line.Rotation = angle;
+            line.Color = color;
+
+            this[Layer].Add(line);                
         }
 
     }

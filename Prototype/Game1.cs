@@ -136,6 +136,8 @@ namespace Prototype
             particleManager["Smoke"].MaxSize = 0.7f;
             particleManager["Smoke"].Acceleration = new Vector2(0, 9);
 
+            drawManager.DrawLine("Debug", new Vector2(400, 400), new Vector2(600, 500), Color.Red, 2);
+
             // TODO: use this.Content to load your game content here
         }
 
