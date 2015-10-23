@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
 
 namespace Engine.Objects
 {
@@ -9,11 +11,36 @@ namespace Engine.Objects
         /// Texture for the sprite
         /// </summary>
         public Texture2D Texture;
-        
+
+        private Vector2 position;
         /// <summary>
         /// Position of the sprite
         /// </summary>
-        public Vector2 Position;
+        public Vector2 Position
+        {
+            get
+            {
+                if (Body != null)
+                {
+                    return Body.Position;
+                }
+                else
+                {
+                    return position;
+                }
+            }
+            set
+            {
+                if (Body != null)
+                {
+                    Body.Position = value;
+                }
+                else
+                {
+                    position = value;
+                }
+            }
+        }
 
         /// <summary>
         /// What part of the texture to be shown
@@ -60,6 +87,16 @@ namespace Engine.Objects
         /// </summary>
         public int Index;
 
+        /// <summary>
+        /// Body containing all physics information
+        /// </summary>
+        public Body Body = null;
+
+
+        public Sprite(Texture2D texture, Body body) : this(texture)
+        {
+            this.Body = body;
+        }
         public Sprite(Texture2D texture)
         {
             this.Texture = texture;
@@ -70,10 +107,18 @@ namespace Engine.Objects
             this.Origin = new Vector2(texture.Width / 2, texture.Height / 2);
             this.Scale = Vector2.One;
             this.SpriteEffect = SpriteEffects.None;
-            this.Alive = true;      
+            this.Alive = true;
         }
 
-        public virtual void Update(GameTime gameTime) { }
+
+        public virtual void Update(GameTime gameTime)
+        {
+            if (Body != null)
+            {
+                this.Position = Body.Position;
+                this.Rotation = Body.Rotation;
+            }
+        }
 
         public virtual void Draw(SpriteBatch spriteBatch)
         {

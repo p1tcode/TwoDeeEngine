@@ -7,6 +7,12 @@ using Engine.Objects;
 using Engine.Components;
 using System;
 using System.Threading;
+using FarseerPhysics;
+using FarseerPhysics.Collision;
+using FarseerPhysics.Common;
+using FarseerPhysics.Controllers;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
 
 namespace Prototype
 {
@@ -17,15 +23,17 @@ namespace Prototype
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        DrawManager drawManager;
+        ObjectManager objectManager;
         InputManger inputManager;
         ParticleManager particleManager;
         Camera2D camera;
 
+        World physicsWorld;
+
         Sprite sprite;
+        Sprite fallingSprite;
         Animation player;
 
-        Sprite spriteDebug;
         Text debugText;
 
         FpsCounter fps;
@@ -47,8 +55,8 @@ namespace Prototype
             Content.RootDirectory = "Content";
             Services.AddService(typeof(ContentManager), Content);
 
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = 720;
+            graphics.PreferredBackBufferWidth = 1920;
+            graphics.PreferredBackBufferHeight = 1080;
 
             IsMouseVisible = true;
 
@@ -74,18 +82,20 @@ namespace Prototype
             camera.JumpToTarget(camera.Origin);
             Components.Add(camera);
 
-            drawManager = new DrawManager(this);
-            Components.Add(drawManager);
+            objectManager = new ObjectManager(this);
+            Components.Add(objectManager);
 
             inputManager = new InputManger(this);
             Components.Add(inputManager);
 
             particleManager = new ParticleManager(this);
             Components.Add(particleManager);
-
+            particleManager.AddParticleEffect("Smoke");
 
             fps = new FpsCounter(this, Content.Load<SpriteFont>(@"default"));
             Components.Add(fps);
+
+            physicsWorld = new World(new Vector2(0, 250));
 
             base.Initialize();
         }
@@ -96,24 +106,40 @@ namespace Prototype
         /// </summary>
         protected override void LoadContent()
         {
-            sprite = new Sprite(Content.Load<Texture2D>(@"crate"));
+            Texture2D tex = Content.Load<Texture2D>(@"crate");
+            Body body = BodyFactory.CreateRectangle(physicsWorld, tex.Width, tex.Height, 1);
+            sprite = new Sprite(Content.Load<Texture2D>(@"crate"), body);
+            sprite.Body.BodyType = BodyType.Static;
             sprite.Position = new Vector2(200, 200);
             sprite.Color = Color.Red;
-            drawManager["Player"].Add(sprite);
+            objectManager["Player"].Add(sprite);
+
+
+            tex = Content.Load<Texture2D>(@"crate");
+            body = BodyFactory.CreateRectangle(physicsWorld, tex.Width, tex.Height, 1);
+            fallingSprite = new Sprite(tex, body);
+            fallingSprite.Position = new Vector2(500, 200);
+            fallingSprite.Body.BodyType = BodyType.Dynamic;
+            objectManager["Player"].Add(fallingSprite);
+
+            //PhysicsSprite fallingSprite2;
+            tex = Content.Load<Texture2D>(@"crate");
+            body = BodyFactory.CreateRectangle(physicsWorld, tex.Width, tex.Height, 1);
+            Sprite fallingSprite2 = new Sprite(tex, body);
+            fallingSprite2.Position = new Vector2(440, 480);
+            fallingSprite2.Body.BodyType = BodyType.Static;
+            fallingSprite2.Body.Friction = 100;
+            objectManager["Player"].Add(fallingSprite2);
+
 
             player = new Animation(Content.Load<Texture2D>(@"alice"), 64, 64, 0.2f);
-            drawManager["Player"].Add(player);
+            objectManager["Player"].Add(player);
             player.Position = new Vector2(500, 500);
-
-            spriteDebug = new Sprite(Content.Load<Texture2D>(@"crate"));
-            spriteDebug.Position = Vector2.Zero;
-            spriteDebug.Color = Color.Aqua;
-            drawManager["Foreground"].Add(spriteDebug);
 
             debugText = new Text(Content.Load<SpriteFont>(@"default"));
             debugText.Color = Color.Red;
             debugText.Position = new Vector2(10, 45);
-            drawManager["Text"].AddText(debugText);
+            objectManager["Text"].AddText(debugText);
 
             inputManager.AddAction("MoveItem");
             inputManager["MoveItem"].Add(MouseButtons.Left);
@@ -121,7 +147,8 @@ namespace Prototype
             inputManager.AddAction("MouseRightClick");
             inputManager["MouseRightClick"].Add(MouseButtons.Right);
 
-            emitter = new ParticleEmitter(new Vector2(200, 200), 1000, "Player", true);
+           
+            emitter = new ParticleEmitter(Vector2.Zero, 1000, "Background", true);
             particleManager["Smoke"].AddEmitter(emitter);
             particleManager["Smoke"].MinInitialSpeed = 5;
             particleManager["Smoke"].MaxInitialSpeed = 10;
@@ -135,8 +162,9 @@ namespace Prototype
             particleManager["Smoke"].MinSize = 0.5f;
             particleManager["Smoke"].MaxSize = 0.7f;
             particleManager["Smoke"].Acceleration = new Vector2(0, 9);
+            
 
-            drawManager.DrawLine("Debug", new Vector2(400, 400), new Vector2(600, 500), Color.Red, 2);
+            objectManager.DrawLine("Debug", new Vector2(400, 400), new Vector2(600, 500), Color.Red, 2);
 
             // TODO: use this.Content to load your game content here
         }
@@ -161,6 +189,8 @@ namespace Prototype
                 Exit();
 
             elapsedTime += gameTime.ElapsedGameTime;
+
+            physicsWorld.Step(Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, (1f / 30f)));
 
             #region Blinking Crate
             if (elapsedTime > TimeSpan.FromSeconds(1))
@@ -189,6 +219,16 @@ namespace Prototype
                 sprite.Position += new Vector2(-speed * (float)gameTime.ElapsedGameTime.TotalSeconds, 0);
             if (inputManager["Right"].IsDown)
                 sprite.Position += new Vector2(speed * (float)gameTime.ElapsedGameTime.TotalSeconds, 0);
+            if (inputManager["MoveItem"].IsClicked)
+            {
+                Texture2D tex = Content.Load<Texture2D>(@"crate");
+                Body body = BodyFactory.CreateRectangle(physicsWorld, tex.Width, tex.Height, 1);
+                fallingSprite = new Sprite(tex, body);
+                fallingSprite.Position = inputManager.MouseWorldPosition;
+                fallingSprite.Body.Friction = 100;
+                fallingSprite.Body.BodyType = BodyType.Dynamic;
+                objectManager["Player"].Add(fallingSprite);
+            }
             inputManager.MouseGrabSprite(sprite, "MoveItem");
             inputManager.MouseGrabWorld("MouseRightClick");
 
@@ -201,11 +241,11 @@ namespace Prototype
                 emitter.Active = false;
             }
  
-            sprite.Position.X += inputManager.LeftStick(PlayerIndex.One).X * (float)gameTime.ElapsedGameTime.TotalSeconds * speed;
-            sprite.Position.Y += inputManager.LeftStick(PlayerIndex.One).Y * (float)gameTime.ElapsedGameTime.TotalSeconds * speed;
+            sprite.Position += inputManager.LeftStick(PlayerIndex.One) * (float)gameTime.ElapsedGameTime.TotalSeconds * speed;
+            sprite.Position += inputManager.LeftStick(PlayerIndex.One) * (float)gameTime.ElapsedGameTime.TotalSeconds * speed;
 
-            sprite.Position.Y += inputManager.LeftTrigger(PlayerIndex.One) * (float)gameTime.ElapsedGameTime.TotalSeconds * speed;
-            sprite.Position.Y -= inputManager.RightTrigger(PlayerIndex.One) * (float)gameTime.ElapsedGameTime.TotalSeconds * speed;
+            //sprite.Position += inputManager.LeftTrigger(PlayerIndex.One) * (float)gameTime.ElapsedGameTime.TotalSeconds * speed;
+            //sprite.Position -= inputManager.RightTrigger(PlayerIndex.One) * (float)gameTime.ElapsedGameTime.TotalSeconds * speed;
             #endregion
 
             //camera.SetTarget(sprite.Position);
@@ -213,10 +253,10 @@ namespace Prototype
             emitter.Position = inputManager.MouseWorldPosition;
 
             debugText.OutputText = String.Format("Sprites: {0} \nMousePos: {1}, {2} \nVisibleSprites: {3} \nScrollWheelValue: {4} \nNumberOfParticleEffects: {5} \nNumberOfEmitters: {6}, \nNumbersOfParticles: {7}, \nNumberOfFreeParticles: {8}",
-                                                    drawManager.NumberOfSprites.ToString(),
+                                                    objectManager.NumberOfSprites.ToString(),
                                                     inputManager.MousePosition.X,
                                                     inputManager.MousePosition.Y,
-                                                    drawManager.VisibleSprites.ToString(),
+                                                    objectManager.VisibleSprites.ToString(),
                                                     inputManager.ScrollWheelValue.ToString(),
                                                     particleManager.NumberOfEffects.ToString(),
                                                     particleManager.TotalEmitters.ToString(),

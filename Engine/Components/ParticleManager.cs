@@ -54,8 +54,6 @@ namespace Engine.Components
         {
             game.Services.AddService(typeof(IParticleManager), this);
 
-            AddParticleEffect("Fire");
-            AddParticleEffect("Smoke");
         }
 
         public override void Initialize()

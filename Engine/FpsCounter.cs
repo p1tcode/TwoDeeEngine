@@ -9,7 +9,7 @@ namespace Engine
     public class FpsCounter : DrawableGameComponent
     {
         Text text;
-        IDrawManager drawManager;
+        IObjectManager objectManager;
         
 
         int frameRate = 0;
@@ -28,8 +28,8 @@ namespace Engine
 
         public override void Initialize()
         {
-            this.drawManager = (IDrawManager)Game.Services.GetService(typeof(IDrawManager));
-            drawManager["Text"].AddText(text);
+            this.objectManager = (IObjectManager)Game.Services.GetService(typeof(IObjectManager));
+            objectManager["Text"].AddText(text);
 
             base.Initialize();
         }

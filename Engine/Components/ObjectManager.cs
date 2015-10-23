@@ -3,10 +3,12 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Engine.Objects;
 using System;
+using FarseerPhysics.Dynamics;
+
 
 namespace Engine.Components
 {
-    interface IDrawManager
+    interface IObjectManager
     {
         void AddLayer(string layerName);
         Layer this[string LayerName] { get; }
@@ -15,13 +17,14 @@ namespace Engine.Components
     }
 
 
-    public class DrawManager : DrawableGameComponent, IDrawManager
+    public class ObjectManager : DrawableGameComponent, IObjectManager
     {
         List<Layer> layers = new List<Layer>();
 
         ICamera2D camera;
         SpriteBatch spriteBatch;
- 
+        Texture2D pixel;
+
         #region Properties
         int numberOfSprites = 0;
         public int NumberOfSprites
@@ -52,10 +55,10 @@ namespace Engine.Components
         }
         #endregion
 
-        public DrawManager(Game game)
+        public ObjectManager(Game game)
             : base(game)
         {
-            game.Services.AddService(typeof(IDrawManager), this); 
+            game.Services.AddService(typeof(IObjectManager), this); 
 
             // Add default layers
             AddLayer("Background");
@@ -63,7 +66,7 @@ namespace Engine.Components
             AddLayer("Foreground");
             AddLayer("Debug");
             AddLayer("Text");
-   
+
         }
 
         public override void Initialize()
@@ -101,10 +104,13 @@ namespace Engine.Components
 
         public override void Update(GameTime gameTime)
         {
+
+
             foreach (Layer layer in layers)
             {
                 layer.Update(gameTime);
             }
+
             
             base.Update(gameTime);
         }
@@ -129,11 +135,15 @@ namespace Engine.Components
         /// <param name="thickness">The thickness of the line</param>
         public void DrawLine(String Layer, Vector2 point1, Vector2 point2, Color color, float thickness)
         {
-            Texture2D pixel;
+            
             Sprite line;
 
-            pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
-            pixel.SetData(new[] { Color.White });
+            if (pixel == null)
+            {
+                pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+                pixel.SetData(new[] { Color.White });
+            }
+            
             line = new Sprite(pixel);
 
             // calculate the distance between the two vectors

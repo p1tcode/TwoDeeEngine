@@ -25,7 +25,7 @@ namespace Engine.Objects
         float timeSinceLastParticle;
 
         public ParticleEffect Effect;
-        IDrawManager drawManager;
+        IObjectManager objectManager;
 
         /// <summary>
         /// Return the number of particles in the current emitter
@@ -63,7 +63,7 @@ namespace Engine.Objects
         public void Initialize(Game game, ParticleEffect effect)
         {
             Effect = effect;
-            drawManager = (IDrawManager)game.Services.GetService(typeof(IDrawManager));
+            objectManager = (IObjectManager)game.Services.GetService(typeof(IObjectManager));
         }
 
         /// <summary>
@@ -107,7 +107,8 @@ namespace Engine.Objects
         public void Update(GameTime gameTime)
         {
 
-            // Update particles that are alive and remove dead particles.
+            // Update some particletransitions and remove dead particles.
+            // The main update of the particle itself is done in the IObjectManager
             foreach (Particle p in particles)
             {
                 if (p.Alive)
@@ -123,7 +124,7 @@ namespace Engine.Objects
 
                     if (!p.Alive)
                     {
-                        drawManager[TargetLayer].Remove(p);
+                        objectManager[TargetLayer].Remove(p);
                         freeParticles.Enqueue(p);
                     }
                 }
@@ -146,7 +147,7 @@ namespace Engine.Objects
                     }
                     Particle p = freeParticles.Dequeue();
                     InitializeParticle(p);
-                    drawManager[TargetLayer].Add(p);
+                    objectManager[TargetLayer].Add(p);
                     timeSinceLastParticle = TimeBetweenParticles;
                 }
             }
