@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Content;
 using Engine;
 using Engine.Objects;
 using Engine.Components;
+using Engine.Helpers;
 using System;
 using System.Threading;
 using FarseerPhysics;
@@ -43,7 +44,8 @@ namespace Prototype
 
         Random rand = new Random();
 
-        ParticleEmitter emitter;
+        ParticleEmitter emitterSmoke;
+        ParticleEmitter emitterSpark;
 
         int speed;
 
@@ -90,7 +92,7 @@ namespace Prototype
 
             particleManager = new ParticleManager(this);
             Components.Add(particleManager);
-            particleManager.AddParticleEffect("Smoke");
+            PreFabs.LoadContent_ParticleEffects(particleManager);
 
             fps = new FpsCounter(this, Content.Load<SpriteFont>(@"default"));
             Components.Add(fps);
@@ -141,27 +143,19 @@ namespace Prototype
             debugText.Position = new Vector2(10, 45);
             objectManager["Text"].AddText(debugText);
 
-            inputManager.AddAction("MoveItem");
-            inputManager["MoveItem"].Add(MouseButtons.Left);
+            inputManager.AddAction("MouseTrigger");
+            inputManager["MouseTrigger"].Add(MouseButtons.Left);
 
             inputManager.AddAction("MouseRightClick");
             inputManager["MouseRightClick"].Add(MouseButtons.Right);
 
-           
-            emitter = new ParticleEmitter(Vector2.Zero, 1000, "Background", true);
-            particleManager["Smoke"].AddEmitter(emitter);
-            particleManager["Smoke"].MinInitialSpeed = 5;
-            particleManager["Smoke"].MaxInitialSpeed = 10;
-            particleManager["Smoke"].MinGrowth = 0.2f;
-            particleManager["Smoke"].MaxGrowth = 0.5f;
-            particleManager["Smoke"].Color = Color.SlateGray;
-            particleManager["Smoke"].MinTTL = 4f;
-            particleManager["Smoke"].MaxTTL = 6f;
-            particleManager["Smoke"].MinAlpha = 0.2f;
-            particleManager["Smoke"].MaxAlpha = 1f;
-            particleManager["Smoke"].MinSize = 0.5f;
-            particleManager["Smoke"].MaxSize = 0.7f;
-            particleManager["Smoke"].Acceleration = new Vector2(0, 9);
+
+            PreFabs.Initialize_ParticleEffects(particleManager);
+            emitterSmoke = new ParticleEmitter(Vector2.Zero, 20, "Background", true);
+            particleManager["Smoke"].AddEmitter(emitterSmoke);
+            emitterSpark = new ParticleEmitter(Vector2.Zero, 30, "Background", true);
+            particleManager["Spark"].AddEmitter(emitterSpark);
+            
             
 
             objectManager.DrawLine("Debug", new Vector2(400, 400), new Vector2(600, 500), Color.Red, 2);
@@ -219,7 +213,7 @@ namespace Prototype
                 sprite.Position += new Vector2(-speed * (float)gameTime.ElapsedGameTime.TotalSeconds, 0);
             if (inputManager["Right"].IsDown)
                 sprite.Position += new Vector2(speed * (float)gameTime.ElapsedGameTime.TotalSeconds, 0);
-            if (inputManager["MoveItem"].IsClicked)
+            if (inputManager["MouseTrigger"].IsClicked)
             {
                 Texture2D tex = Content.Load<Texture2D>(@"crate");
                 Body body = BodyFactory.CreateRectangle(physicsWorld, tex.Width, tex.Height, 1);
@@ -229,16 +223,21 @@ namespace Prototype
                 fallingSprite.Body.BodyType = BodyType.Dynamic;
                 objectManager["Player"].Add(fallingSprite);
             }
-            inputManager.MouseGrabSprite(sprite, "MoveItem");
+            inputManager.MouseGrabSprite(sprite, "MouseTrigger");
             inputManager.MouseGrabWorld("MouseRightClick");
 
-            if (inputManager["MoveItem"].IsDown)
+            emitterSmoke.Position = inputManager.MouseWorldPosition;
+            emitterSpark.Position = inputManager.MouseWorldPosition;
+
+            if (inputManager["MouseTrigger"].IsDown)
             {
-                emitter.Active = true;
+                emitterSmoke.Active = true;
+                emitterSpark.Active = true;
             }
             else
             {
-                emitter.Active = false;
+                emitterSmoke.Active = false;
+                emitterSpark.Active = false;
             }
  
             sprite.Position += inputManager.LeftStick(PlayerIndex.One) * (float)gameTime.ElapsedGameTime.TotalSeconds * speed;
@@ -250,7 +249,7 @@ namespace Prototype
 
             //camera.SetTarget(sprite.Position);
 
-            emitter.Position = inputManager.MouseWorldPosition;
+            
 
             debugText.OutputText = String.Format("Sprites: {0} \nMousePos: {1}, {2} \nVisibleSprites: {3} \nScrollWheelValue: {4} \nNumberOfParticleEffects: {5} \nNumberOfEmitters: {6}, \nNumbersOfParticles: {7}, \nNumberOfFreeParticles: {8}",
                                                     objectManager.NumberOfSprites.ToString(),
@@ -260,8 +259,8 @@ namespace Prototype
                                                     inputManager.ScrollWheelValue.ToString(),
                                                     particleManager.NumberOfEffects.ToString(),
                                                     particleManager.TotalEmitters.ToString(),
-                                                    emitter.NumbersOfParticles.ToString(),
-                                                    emitter.NumbersOfFreeParticles.ToString());
+                                                    emitterSmoke.NumbersOfParticles.ToString(),
+                                                    emitterSmoke.NumbersOfFreeParticles.ToString());
             
             // TODO: Add your update logic here
             base.Update(gameTime);

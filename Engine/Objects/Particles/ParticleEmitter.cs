@@ -84,7 +84,7 @@ namespace Engine.Objects
         public void InitializeParticle(Particle p)
         {
             p.Position = Position;
-            p.Direction = RandomMath.RandomDirection();
+            p.Direction = RandomMath.RandomDirection(Effect.MinDirection, Effect.MaxDirection);
             p.Velocity = p.Direction * new Vector2(RandomMath.RandomBetween(Effect.MinInitialSpeed, Effect.MaxInitialSpeed));
             p.Scale = new Vector2(RandomMath.RandomBetween(Effect.MinSize, Effect.MaxSize));
             p.Growth = RandomMath.RandomBetween(Effect.MinGrowth, Effect.MaxGrowth);

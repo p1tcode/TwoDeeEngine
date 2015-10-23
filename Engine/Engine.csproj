@@ -42,6 +42,7 @@
     <Compile Include="Camera2D.cs" />
     <Compile Include="Components\ObjectManager.cs" />
     <Compile Include="Components\ParticleManager.cs" />
+    <Compile Include="Helpers\PreFabs.cs" />
     <Compile Include="Objects\Draw\Animation.cs" />
     <Compile Include="Objects\Draw\Layer.cs" />
     <Compile Include="Components\InputManager.cs" />
