@@ -7,13 +7,13 @@ using Engine.Objects;
 using Engine.Components;
 using Engine.Helpers;
 using System;
-using System.Threading;
 using FarseerPhysics;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Dynamics.Contacts;
+using FarseerPhysics.Factories;
 using FarseerPhysics.Collision;
 using FarseerPhysics.Common;
 using FarseerPhysics.Controllers;
-using FarseerPhysics.Dynamics;
-using FarseerPhysics.Factories;
 
 namespace Prototype
 {
@@ -28,26 +28,21 @@ namespace Prototype
         InputManger inputManager;
         ParticleManager particleManager;
         Camera2D camera;
-
         World physicsWorld;
 
-        Sprite sprite;
         Sprite fallingSprite;
-        Animation player;
+        
 
         Text debugText;
 
         FpsCounter fps;
 
         TimeSpan elapsedTime;
-        bool on = true;
 
         Random rand = new Random();
 
         ParticleEmitter emitterSmoke;
         ParticleEmitter emitterSpark;
-
-        int speed;
 
 
         public Game1()
@@ -59,6 +54,9 @@ namespace Prototype
 
             graphics.PreferredBackBufferWidth = 1920;
             graphics.PreferredBackBufferHeight = 1080;
+            graphics.IsFullScreen = false;
+            IsFixedTimeStep = true;
+            graphics.SynchronizeWithVerticalRetrace = true;
 
             IsMouseVisible = true;
 
@@ -109,34 +107,44 @@ namespace Prototype
         protected override void LoadContent()
         {
             Texture2D tex = Content.Load<Texture2D>(@"crate");
-            Body body = BodyFactory.CreateRectangle(physicsWorld, tex.Width, tex.Height, 1);
-            sprite = new Sprite(Content.Load<Texture2D>(@"crate"), body);
-            sprite.Body.BodyType = BodyType.Static;
-            sprite.Position = new Vector2(200, 200);
-            sprite.Color = Color.Red;
-            objectManager["Player"].Add(sprite);
 
-
-            tex = Content.Load<Texture2D>(@"crate");
-            body = BodyFactory.CreateRectangle(physicsWorld, tex.Width, tex.Height, 1);
-            fallingSprite = new Sprite(tex, body);
+            Body bodyDynamic = BodyFactory.CreateRectangle(physicsWorld, tex.Width, tex.Height, 1);
+            fallingSprite = new Sprite(tex, bodyDynamic);
             fallingSprite.Position = new Vector2(500, 200);
             fallingSprite.Body.BodyType = BodyType.Dynamic;
             objectManager["Player"].Add(fallingSprite);
 
             //PhysicsSprite fallingSprite2;
             tex = Content.Load<Texture2D>(@"crate");
-            body = BodyFactory.CreateRectangle(physicsWorld, tex.Width, tex.Height, 1);
-            Sprite fallingSprite2 = new Sprite(tex, body);
-            fallingSprite2.Position = new Vector2(440, 480);
-            fallingSprite2.Body.BodyType = BodyType.Static;
-            fallingSprite2.Body.Friction = 100;
-            objectManager["Player"].Add(fallingSprite2);
+            
+            for (int i = 0; i < 40; i++)
+            {
+                Body body = BodyFactory.CreateRectangle(physicsWorld, tex.Width, tex.Height, 1);
+                Sprite staticSprite = new Sprite(tex, body);
+                staticSprite.Position = new Vector2(64*i + 32, 1048);
+                staticSprite.Body.BodyType = BodyType.Static;
+                staticSprite.Body.Friction = 1;
+                objectManager["Player"].Add(staticSprite);
+            }
+            for (int i = 0; i < 25; i++)
+            {
+                Body body = BodyFactory.CreateRectangle(physicsWorld, tex.Width, tex.Height, 1);
+                Sprite staticSprite = new Sprite(tex, body);
+                staticSprite.Position = new Vector2(32, 1048- 64 * i);
+                staticSprite.Body.BodyType = BodyType.Static;
+                staticSprite.Body.Friction = 1;
+                objectManager["Player"].Add(staticSprite);
+            }
+            for (int i = 0; i < 25; i++)
+            {
+                Body body = BodyFactory.CreateRectangle(physicsWorld, tex.Width, tex.Height, 1);
+                Sprite staticSprite = new Sprite(tex, body);
+                staticSprite.Position = new Vector2(29*64 + 32, 1048 - 64 * i);
+                staticSprite.Body.BodyType = BodyType.Static;
+                staticSprite.Body.Friction = 1;
+                objectManager["Player"].Add(staticSprite);
+            }
 
-
-            player = new Animation(Content.Load<Texture2D>(@"alice"), 64, 64, 0.2f);
-            objectManager["Player"].Add(player);
-            player.Position = new Vector2(500, 500);
 
             debugText = new Text(Content.Load<SpriteFont>(@"default"));
             debugText.Color = Color.Red;
@@ -147,18 +155,15 @@ namespace Prototype
             inputManager["MouseTrigger"].Add(MouseButtons.Left);
 
             inputManager.AddAction("MouseRightClick");
-            inputManager["MouseRightClick"].Add(MouseButtons.Right);
-
+            //inputManager["MouseRightClick"].Add(MouseButtons.Right);
+            inputManager["MouseRightClick"].Add(Keys.Space);
 
             PreFabs.Initialize_ParticleEffects(particleManager);
-            emitterSmoke = new ParticleEmitter(Vector2.Zero, 20, "Background", true);
+            emitterSmoke = new ParticleEmitter(Vector2.Zero, 1, "Foreground", true, false);
             particleManager["Smoke"].AddEmitter(emitterSmoke);
-            emitterSpark = new ParticleEmitter(Vector2.Zero, 30, "Background", true);
+            emitterSpark = new ParticleEmitter(Vector2.Zero, 1, "Foreground", true, false);
             particleManager["Spark"].AddEmitter(emitterSpark);
             
-            
-
-            objectManager.DrawLine("Debug", new Vector2(400, 400), new Vector2(600, 500), Color.Red, 2);
 
             // TODO: use this.Content to load your game content here
         }
@@ -184,51 +189,59 @@ namespace Prototype
 
             elapsedTime += gameTime.ElapsedGameTime;
 
-            physicsWorld.Step(Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, (1f / 30f)));
-
-            #region Blinking Crate
-            if (elapsedTime > TimeSpan.FromSeconds(1))
-            {
-                if (on)
-                {
-                    sprite.Color = Color.Blue;
-                    on = false;
-                }
-                else
-                {
-                    sprite.Color = Color.Red;
-                    on = true;
-                }
-                elapsedTime -= TimeSpan.FromSeconds(1);
-            }
-            #endregion
+            physicsWorld.Step(Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, (1f / 60f)));
 
             #region Input
-            speed = 150;
-            if (inputManager["Down"].IsDown)
-                sprite.Position += new Vector2(0, speed * (float)gameTime.ElapsedGameTime.TotalSeconds);    
-            if (inputManager["Up"].IsDown)
-                sprite.Position += new Vector2(0, -speed * (float)gameTime.ElapsedGameTime.TotalSeconds);
-            if (inputManager["Left"].IsDown)
-                sprite.Position += new Vector2(-speed * (float)gameTime.ElapsedGameTime.TotalSeconds, 0);
-            if (inputManager["Right"].IsDown)
-                sprite.Position += new Vector2(speed * (float)gameTime.ElapsedGameTime.TotalSeconds, 0);
+
             if (inputManager["MouseTrigger"].IsClicked)
             {
                 Texture2D tex = Content.Load<Texture2D>(@"crate");
                 Body body = BodyFactory.CreateRectangle(physicsWorld, tex.Width, tex.Height, 1);
                 fallingSprite = new Sprite(tex, body);
                 fallingSprite.Position = inputManager.MouseWorldPosition;
-                fallingSprite.Body.Friction = 100;
+                fallingSprite.Body.Friction = 0.2f;
                 fallingSprite.Body.BodyType = BodyType.Dynamic;
                 objectManager["Player"].Add(fallingSprite);
             }
-            inputManager.MouseGrabSprite(sprite, "MouseTrigger");
+
+            
+
+
             inputManager.MouseGrabWorld("MouseRightClick");
 
-            emitterSmoke.Position = inputManager.MouseWorldPosition;
-            emitterSpark.Position = inputManager.MouseWorldPosition;
+            //emitterSmoke.Position = inputManager.MouseWorldPosition;
+            //emitterSpark.Position = inputManager.MouseWorldPosition;
 
+
+            //emitterSmoke.Active = true;
+            //emitterSpark.Active = true;
+            
+            foreach (var item in physicsWorld.ContactList)
+            {
+                Vector2 normal;
+                FixedArray2<Vector2> worldPoints;
+                
+
+                item.GetWorldManifold(out normal, out worldPoints);
+
+                emitterSmoke.Position = worldPoints[0];
+                emitterSpark.Position = worldPoints[0];
+
+                if ((item.FixtureA.Body.LinearVelocity.X > 0.2f) ||
+                    (item.FixtureA.Body.LinearVelocity.X < -0.2f) ||
+                    (item.FixtureA.Body.LinearVelocity.Y > 0.2f) ||
+                    (item.FixtureA.Body.LinearVelocity.Y < -0.2f) ||
+                    (item.FixtureA.Body.AngularVelocity > 0.2f) ||
+                    (item.FixtureA.Body.AngularVelocity < -0.2f))
+                    
+                {
+                    emitterSmoke.Trigger(0.01f);
+                    emitterSpark.Trigger(0.1f);
+                }
+                
+
+            }
+            /*
             if (inputManager["MouseTrigger"].IsDown)
             {
                 emitterSmoke.Active = true;
@@ -238,11 +251,8 @@ namespace Prototype
             {
                 emitterSmoke.Active = false;
                 emitterSpark.Active = false;
-            }
+            }*/
  
-            sprite.Position += inputManager.LeftStick(PlayerIndex.One) * (float)gameTime.ElapsedGameTime.TotalSeconds * speed;
-            sprite.Position += inputManager.LeftStick(PlayerIndex.One) * (float)gameTime.ElapsedGameTime.TotalSeconds * speed;
-
             //sprite.Position += inputManager.LeftTrigger(PlayerIndex.One) * (float)gameTime.ElapsedGameTime.TotalSeconds * speed;
             //sprite.Position -= inputManager.RightTrigger(PlayerIndex.One) * (float)gameTime.ElapsedGameTime.TotalSeconds * speed;
             #endregion

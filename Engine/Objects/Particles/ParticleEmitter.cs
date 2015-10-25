@@ -12,6 +12,11 @@ namespace Engine.Objects
         public bool Active { get; set; }
         public float TimeBetweenParticles { get; set; }
         public string TargetLayer { get; set; }
+        public bool Continous { get; set; }
+
+        private bool trigger = false;
+        private float elapsedTime = 0;
+        private float pauseBetweenTrigger  = 0.01f;
 
         int particlesPerSecond;
         public int ParticlesPerSecond
@@ -49,8 +54,15 @@ namespace Engine.Objects
         }
 
 
-
-        public ParticleEmitter(Vector2 position, int particlesPerSecond, string targetLayer, bool active)
+        /// <summary>
+        /// Create a particle emitter that controls the release off particles
+        /// </summary>
+        /// <param name="position">Position of released particles</param>
+        /// <param name="particlesPerSecond">Numbers of particles released per second if the effect is continous. If not all particles will be released instantly.</param>
+        /// <param name="targetLayer">At what layer should the particles be released (ObjectManager)</param>
+        /// <param name="active">Is it active or non active</param>
+        /// <param name="continous">Should particles be released at once or continous during the active time</param>
+        public ParticleEmitter(Vector2 position, int particlesPerSecond, string targetLayer, bool active, bool continous)
         {
             Position = position;
             this.particlesPerSecond = particlesPerSecond;
@@ -58,6 +70,7 @@ namespace Engine.Objects
             timeSinceLastParticle = TimeBetweenParticles;
             TargetLayer = targetLayer;
             Active = active;
+            Continous = continous;
         }
 
         public void Initialize(Game game, ParticleEffect effect)
@@ -75,6 +88,12 @@ namespace Engine.Objects
             p.Alive = false;
             particles.Add(p);
             freeParticles.Enqueue(p);
+        }
+
+        public void Trigger(float pauseBetweenTriggers)
+        {
+            trigger = true;
+            this.pauseBetweenTrigger = pauseBetweenTriggers;
         }
 
         /// <summary>
@@ -132,23 +151,56 @@ namespace Engine.Objects
 
             if (Active)
             {
-                // Check if its time to release a new particle
-                timeSinceLastParticle -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-                if (timeSinceLastParticle <= 0)
+                if (Continous)
                 {
-                    if (freeParticles.Count == 0)
+                    // Check if its time to release a new particle
+                    timeSinceLastParticle -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                    if (timeSinceLastParticle <= 0)
                     {
-                        for (int i = 0; i < 10; i++)
+                        if (freeParticles.Count == 0)
                         {
-                            Particle newP = new Particle(Effect.Texture);
-                            AddParticle(newP);
+                            for (int i = 0; i < 10; i++)
+                            {
+                                Particle newP = new Particle(Effect.Texture);
+                                AddParticle(newP);
+                            }
                         }
+                        Particle p = freeParticles.Dequeue();
+                        InitializeParticle(p);
+                        objectManager[TargetLayer].Add(p);
+                        timeSinceLastParticle = TimeBetweenParticles;
                     }
-                    Particle p = freeParticles.Dequeue();
-                    InitializeParticle(p);
-                    objectManager[TargetLayer].Add(p);
-                    timeSinceLastParticle = TimeBetweenParticles;
+                }
+                else
+                {
+                    if (trigger)
+                    {
+                        elapsedTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                        if (elapsedTime > pauseBetweenTrigger)
+                        {
+                            for (int i = 0; i < particlesPerSecond; i++)
+                            {
+                                if (freeParticles.Count == 0)
+                                {
+                                    for (int y = 0; y < 10; y++)
+                                    {
+                                        Particle newP = new Particle(Effect.Texture);
+                                        AddParticle(newP);
+                                    }
+                                }
+                                Particle p = freeParticles.Dequeue();
+                                InitializeParticle(p);
+                                objectManager[TargetLayer].Add(p);
+                            }
+
+                            trigger = false;
+                            elapsedTime = 0;
+                        }
+                        
+                    
+                    }
                 }
             }
         }

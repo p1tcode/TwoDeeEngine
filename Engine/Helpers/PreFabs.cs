@@ -23,20 +23,22 @@ namespace Engine.Helpers
             particleManager["Smoke"].MaxInitialSpeed = 10;
             particleManager["Smoke"].MinGrowth = 0.2f;
             particleManager["Smoke"].MaxGrowth = 0.5f;
-            particleManager["Smoke"].Color = Color.SlateGray;
-            particleManager["Smoke"].MinTTL = 4f;
-            particleManager["Smoke"].MaxTTL = 6f;
+            particleManager["Smoke"].Color = Color.DimGray;
+            particleManager["Smoke"].MinTTL = 2f;
+            particleManager["Smoke"].MaxTTL = 4f;
             particleManager["Smoke"].MinAlpha = 0.2f;
             particleManager["Smoke"].MaxAlpha = 1f;
             particleManager["Smoke"].MinSize = 0.5f;
             particleManager["Smoke"].MaxSize = 0.7f;
+            particleManager["Smoke"].MinRotationSpeed = 0;
+            particleManager["Smoke"].MaxRotationSpeed = 0;
             particleManager["Smoke"].Acceleration = new Vector2(0, -7);
 
             particleManager["Spark"].MinInitialSpeed = 80;
             particleManager["Spark"].MaxInitialSpeed = 120;
             particleManager["Spark"].MinGrowth = -0.1f;
             particleManager["Spark"].MaxGrowth = -0.05f;
-            particleManager["Spark"].Color = Color.Yellow;
+            particleManager["Spark"].Color = Color.Orange;
             particleManager["Spark"].MinTTL = 2f;
             particleManager["Spark"].MaxTTL = 3f;
             particleManager["Spark"].MinAlpha = 0.7f;
