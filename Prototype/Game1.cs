@@ -32,7 +32,6 @@ namespace Prototype
         World physicsWorld;
 
         Sprite fallingSprite;
-        
 
         Text debugText;
 
