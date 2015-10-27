@@ -22,8 +22,11 @@ namespace Engine.Components
         List<GameScreen> screensToUpdate = new List<GameScreen>();
         List<GameScreen> screensToDraw = new List<GameScreen>();
 
-        IInputManager inputManager;
         ContentManager content;
+        InputManger inputManager;
+        Camera2D camera;
+        ParticleManager particleManager;
+
 
         new public Game Game
         {
@@ -43,9 +46,22 @@ namespace Engine.Components
 
         public override void Initialize()
         {
-            inputManager = (IInputManager)Game.Services.GetService(typeof(IInputManager));
+            // Load content
             content = (ContentManager)Game.Services.GetService(typeof(ContentManager));
-            
+
+            // Load Camera
+            camera = new Camera2D(this.Game, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
+            Game.Components.Add(camera);
+            camera.JumpToTarget(camera.Origin);
+
+            // Load input manager
+            inputManager = new InputManger(this.Game);
+            Game.Components.Add(inputManager);
+
+            // Load particleManager
+            particleManager = new ParticleManager(this.Game);
+            Game.Components.Add(particleManager);
+
             base.Initialize();
         }
 
