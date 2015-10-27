@@ -34,7 +34,7 @@
       <HintPath>..\packages\FarseerPhysics.Portable.3.5.1\lib\portable-net4+sl4+wp8+win8\FarseerPhysics.Portable.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MonoGame.Framework, Version=3.3.0.2238, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="MonoGame.Framework, Version=3.4.0.456, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -42,6 +42,7 @@
     <Compile Include="Camera2D.cs" />
     <Compile Include="Components\ObjectManager.cs" />
     <Compile Include="Components\ParticleManager.cs" />
+    <Compile Include="Components\ScreenManager.cs" />
     <Compile Include="Helpers\PreFabs.cs" />
     <Compile Include="Objects\Draw\Animation.cs" />
     <Compile Include="Objects\Draw\Layer.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="Objects\Draw\Sprite.cs" />
     <Compile Include="Objects\Draw\Text.cs" />
     <Compile Include="Objects\Particles\ParticleEmitter.cs" />
+    <Compile Include="Objects\Screens\GameScreen.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\RandomMath.cs" />
   </ItemGroup>

@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Engine.Objects;
 using System;
-using FarseerPhysics.Dynamics;
 
 
 namespace Engine.Components
@@ -95,7 +94,7 @@ namespace Engine.Components
         /// <summary>
         /// Adds an layer to the LayerManager
         /// </summary>
-        /// <param name="actionName"></param>
+        /// <param name="LayerName"></param>
         public void AddLayer(string layerName)
         {
             layers.Add(new Layer(layerName));

@@ -27,6 +27,7 @@ namespace Prototype
         ObjectManager objectManager;
         InputManger inputManager;
         ParticleManager particleManager;
+        ScreenManager screenManager;
         Camera2D camera;
         World physicsWorld;
 
@@ -52,9 +53,22 @@ namespace Prototype
             Content.RootDirectory = "Content";
             Services.AddService(typeof(ContentManager), Content);
 
-            graphics.PreferredBackBufferWidth = 1920;
-            graphics.PreferredBackBufferHeight = 1080;
             graphics.IsFullScreen = false;
+
+            if (graphics.IsFullScreen)
+            {
+                graphics.PreferredBackBufferWidth = 2560;
+                graphics.PreferredBackBufferHeight = 1440;
+                //graphics.PreferredBackBufferWidth = 1920;
+                //graphics.PreferredBackBufferHeight = 1080;
+            }
+            else
+            {
+                graphics.PreferredBackBufferWidth = 1920;
+                graphics.PreferredBackBufferHeight = 1080;
+            }
+            
+            
             IsFixedTimeStep = true;
             graphics.SynchronizeWithVerticalRetrace = true;
 
@@ -62,7 +76,9 @@ namespace Prototype
 
             graphics.SynchronizeWithVerticalRetrace = false;
             this.IsFixedTimeStep = false;
-                        
+
+            ConvertUnits.SetDisplayUnitToSimUnitRatio(64f);
+
         }
 
         /// <summary>
@@ -92,10 +108,15 @@ namespace Prototype
             Components.Add(particleManager);
             PreFabs.LoadContent_ParticleEffects(particleManager);
 
+            screenManager = new ScreenManager(this);
+            Components.Add(screenManager);
+
+
             fps = new FpsCounter(this, Content.Load<SpriteFont>(@"default"));
             Components.Add(fps);
 
-            physicsWorld = new World(new Vector2(0, 250));
+            physicsWorld = new World(new Vector2(0, 980f));
+            
 
             base.Initialize();
         }
@@ -123,7 +144,7 @@ namespace Prototype
                 Sprite staticSprite = new Sprite(tex, body);
                 staticSprite.Position = new Vector2(64*i + 32, 1048);
                 staticSprite.Body.BodyType = BodyType.Static;
-                staticSprite.Body.Friction = 1;
+                staticSprite.Body.Friction = 1f;
                 objectManager["Player"].Add(staticSprite);
             }
             for (int i = 0; i < 25; i++)
@@ -132,7 +153,7 @@ namespace Prototype
                 Sprite staticSprite = new Sprite(tex, body);
                 staticSprite.Position = new Vector2(32, 1048- 64 * i);
                 staticSprite.Body.BodyType = BodyType.Static;
-                staticSprite.Body.Friction = 1;
+                staticSprite.Body.Friction = 1f;
                 objectManager["Player"].Add(staticSprite);
             }
             for (int i = 0; i < 25; i++)
@@ -141,7 +162,7 @@ namespace Prototype
                 Sprite staticSprite = new Sprite(tex, body);
                 staticSprite.Position = new Vector2(29*64 + 32, 1048 - 64 * i);
                 staticSprite.Body.BodyType = BodyType.Static;
-                staticSprite.Body.Friction = 1;
+                staticSprite.Body.Friction = 1f;
                 objectManager["Player"].Add(staticSprite);
             }
 
@@ -189,7 +210,7 @@ namespace Prototype
 
             elapsedTime += gameTime.ElapsedGameTime;
 
-            physicsWorld.Step(Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, (1f / 60f)));
+            physicsWorld.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             #region Input
 
@@ -199,7 +220,7 @@ namespace Prototype
                 Body body = BodyFactory.CreateRectangle(physicsWorld, tex.Width, tex.Height, 1);
                 fallingSprite = new Sprite(tex, body);
                 fallingSprite.Position = inputManager.MouseWorldPosition;
-                fallingSprite.Body.Friction = 0.2f;
+                fallingSprite.Body.Friction = 1f;
                 fallingSprite.Body.BodyType = BodyType.Dynamic;
                 objectManager["Player"].Add(fallingSprite);
             }
@@ -212,9 +233,6 @@ namespace Prototype
             //emitterSmoke.Position = inputManager.MouseWorldPosition;
             //emitterSpark.Position = inputManager.MouseWorldPosition;
 
-
-            //emitterSmoke.Active = true;
-            //emitterSpark.Active = true;
             
             foreach (var item in physicsWorld.ContactList)
             {
@@ -227,18 +245,25 @@ namespace Prototype
                 emitterSmoke.Position = worldPoints[0];
                 emitterSpark.Position = worldPoints[0];
 
-                if ((item.FixtureA.Body.LinearVelocity.X > 0.2f) ||
-                    (item.FixtureA.Body.LinearVelocity.X < -0.2f) ||
-                    (item.FixtureA.Body.LinearVelocity.Y > 0.2f) ||
-                    (item.FixtureA.Body.LinearVelocity.Y < -0.2f) ||
-                    (item.FixtureA.Body.AngularVelocity > 0.2f) ||
-                    (item.FixtureA.Body.AngularVelocity < -0.2f))
+                if ((item.FixtureA.Body.LinearVelocity.X > 1f) ||
+                    (item.FixtureA.Body.LinearVelocity.X < -1f) ||
+                    (item.FixtureA.Body.LinearVelocity.Y > 1f) ||
+                    (item.FixtureA.Body.LinearVelocity.Y < -1f))
                     
                 {
                     emitterSmoke.Trigger(0.01f);
-                    emitterSpark.Trigger(0.1f);
                 }
-                
+                if ((item.FixtureA.Body.LinearVelocity.X > 0.5f) ||
+                    (item.FixtureA.Body.LinearVelocity.X < -0.5f) ||
+                    (item.FixtureA.Body.LinearVelocity.Y > 0.5f) ||
+                    (item.FixtureA.Body.LinearVelocity.Y < -0.5f) ||
+                    (item.FixtureA.Body.AngularVelocity > 0.5f) ||
+                    (item.FixtureA.Body.AngularVelocity < -0.5f))
+
+                {
+                    emitterSpark.Trigger(0.2f);
+                }
+
 
             }
             /*
