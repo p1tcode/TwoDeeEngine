@@ -78,14 +78,17 @@ namespace Engine.Objects
         ObjectManager objectManager;
 
 
-        public GameScreen()
+        public void Initialize()
         {
             objectManager = new ObjectManager(screenManager.Game);
         }
 
         public virtual void LoadContent() { }
 
-        public virtual void UnloadContent() { }
+        public virtual void UnloadContent()
+        {
+            objectManager = null;
+        }
 
         public virtual void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
@@ -94,6 +97,7 @@ namespace Engine.Objects
             if (isExiting)
             {
                 ScreenManager.RemoveScreen(this);
+                isExiting = false;
             }
             else if(coveredByOtherScreen)
             {
@@ -102,10 +106,21 @@ namespace Engine.Objects
             else
             {
                 screenState = ScreenState.Active;
+                if (objectManager != null)
+                {
+                    objectManager.Update(gameTime);
+                }
             }
+
         }
 
-        public abstract void Draw(GameTime gameTime);
+        public virtual void Draw(GameTime gameTime)
+        {
+            if (objectManager != null)
+            {
+                objectManager.Draw(gameTime);
+            }
+        }
 
     }
 }

@@ -1,16 +1,12 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Engine.Objects;
-using Engine.Components;
+using System.Diagnostics;
 
 namespace Engine
 {
     public class FpsCounter : DrawableGameComponent
     {
-        Text text;
-        IObjectManager objectManager;
-        
+        string text;        
 
         int frameRate = 0;
         int frameCounter = 0;
@@ -18,20 +14,9 @@ namespace Engine
 
         TimeSpan elapsedTime = TimeSpan.Zero;
 
-        public FpsCounter(Game game, SpriteFont Font) : base(game)
+        public FpsCounter(Game game) : base(game)
         {
-            this.text = new Text(Font);
-            this.text.Color = Color.Red;
-            this.text.Position = new Vector2(10, 5);
             
-        }
-
-        public override void Initialize()
-        {
-            this.objectManager = (IObjectManager)Game.Services.GetService(typeof(IObjectManager));
-            objectManager["Text"].AddText(text);
-
-            base.Initialize();
         }
 
         public override void Update(GameTime gameTime)
@@ -54,8 +39,8 @@ namespace Engine
         {
             frameCounter++;
            
-            this.text.OutputText = string.Format("FPS: {0} \nMem: {1} MB", frameRate, memory.ToString("F"));
-
+            text = string.Format("FPS: {0} \nMem: {1} MB", frameRate, memory.ToString("F"));
+            Debug.WriteLine(text);
             base.Draw(gameTime);
         }
     }

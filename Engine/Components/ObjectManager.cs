@@ -16,7 +16,7 @@ namespace Engine.Components
     }
 
 
-    public class ObjectManager : DrawableGameComponent, IObjectManager
+    public class ObjectManager : IObjectManager
     {
         List<Layer> layers = new List<Layer>();
 
@@ -55,9 +55,11 @@ namespace Engine.Components
         #endregion
 
         public ObjectManager(Game game)
-            : base(game)
         {
-            game.Services.AddService(typeof(IObjectManager), this); 
+            //game.Services.AddService(typeof(IObjectManager), this);
+
+            this.camera = (ICamera2D)game.Services.GetService(typeof(ICamera2D));
+            this.spriteBatch = (SpriteBatch)game.Services.GetService(typeof(SpriteBatch));
 
             // Add default layers
             AddLayer("Background");
@@ -68,14 +70,6 @@ namespace Engine.Components
 
         }
 
-        public override void Initialize()
-        {
-            // Here is a good place to grab services.
-            this.camera = (ICamera2D)Game.Services.GetService(typeof(ICamera2D));
-            this.spriteBatch = (SpriteBatch)Game.Services.GetService(typeof(SpriteBatch));
-
-            base.Initialize();
-        }
 
         /// <summary>
         /// List of layers
@@ -101,27 +95,29 @@ namespace Engine.Components
         }
 
 
-        public override void Update(GameTime gameTime)
+        /// <summary>
+        /// Updates the ObjectManager
+        /// </summary>
+        /// <param name="gameTime"></param>
+        public void Update(GameTime gameTime)
         {
-
-
             foreach (Layer layer in layers)
             {
                 layer.Update(gameTime);
             }
 
-            
-            base.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime)
+        /// <summary>
+        /// Draws all objects to screen
+        /// </summary>
+        /// <param name="gameTime"></param>
+        public void Draw(GameTime gameTime)
         {
             foreach (Layer layer in layers)
             {
                 layer.Draw(spriteBatch, (Camera2D)camera);
             }
-
-            base.Draw(gameTime);
         }
 
         /// <summary>

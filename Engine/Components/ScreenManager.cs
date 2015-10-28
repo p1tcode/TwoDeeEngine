@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using Engine.Objects;
+using Engine.Helpers;
 
 namespace Engine.Components
 {
@@ -22,11 +24,19 @@ namespace Engine.Components
         List<GameScreen> screensToUpdate = new List<GameScreen>();
         List<GameScreen> screensToDraw = new List<GameScreen>();
 
-        ContentManager content;
-        InputManger inputManager;
+        
         Camera2D camera;
         ParticleManager particleManager;
+        FpsCounter fps;
 
+        bool traceEnabled = true;
+
+
+        public ContentManager Content
+        {
+            get { return content; }
+        }
+        ContentManager content;
 
         new public Game Game
         {
@@ -37,18 +47,20 @@ namespace Engine.Components
         {
             get { return base.GraphicsDevice; }
         }
-        
 
-        public ScreenManager(Game game) : base(game)
+        public InputManger InputManager
         {
-            
+            get { return inputManager; }
         }
+        InputManger inputManager;
+
+
+        public ScreenManager(Game game) : base(game) { }
 
         public override void Initialize()
         {
             // Load content
             content = (ContentManager)Game.Services.GetService(typeof(ContentManager));
-
             // Load Camera
             camera = new Camera2D(this.Game, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
             Game.Components.Add(camera);
@@ -57,16 +69,23 @@ namespace Engine.Components
             // Load input manager
             inputManager = new InputManger(this.Game);
             Game.Components.Add(inputManager);
+            PreFabs.Initialize_Input(inputManager);
 
             // Load particleManager
             particleManager = new ParticleManager(this.Game);
             Game.Components.Add(particleManager);
+            PreFabs.Initialize_ParticleEffects(particleManager);
+
+            fps = new FpsCounter(this.Game);
+            Game.Components.Add(fps);
 
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
+            PreFabs.LoadContent_ParticleEffects(particleManager);
+
             foreach (GameScreen screen in screens)
             {
                 screen.LoadContent();
@@ -92,6 +111,8 @@ namespace Engine.Components
         /// <param name="screen"></param>
         public void AddScreen(GameScreen screen)
         {
+            screen.ScreenManager = this;
+            screen.Initialize();
             screen.LoadContent();
             screens.Add(screen);
         }
@@ -105,6 +126,7 @@ namespace Engine.Components
             screen.UnloadContent();
             screens.Remove(screen);
             screensToUpdate.Remove(screen);
+            screen = null;
         }
 
 
@@ -145,8 +167,26 @@ namespace Engine.Components
                 }
             }
 
+            if (traceEnabled)
+                TraceScreens();
+
             base.Update(gameTime);
         }
+
+        /// <summary>
+        /// Prist a list of all the screens for debugging
+        /// </summary>
+        void TraceScreens()
+        {
+            List<string> screenNames = new List<string>();
+
+            foreach (GameScreen screen in screens)
+                screenNames.Add(screen.GetType().Name);
+
+            Debug.WriteLine(string.Join(", ", screenNames.ToArray()));
+        }
+
+
 
         public override void Draw(GameTime gameTime)
         {

@@ -2,18 +2,10 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
-using Engine;
-using Engine.Objects;
 using Engine.Components;
-using Engine.Helpers;
 using System;
 using FarseerPhysics;
 using FarseerPhysics.Dynamics;
-using FarseerPhysics.Dynamics.Contacts;
-using FarseerPhysics.Factories;
-using FarseerPhysics.Collision;
-using FarseerPhysics.Common;
-using FarseerPhysics.Controllers;
 
 namespace Prototype
 {
@@ -25,7 +17,7 @@ namespace Prototype
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        
+        World world;
         ScreenManager screenManager;
 
         Random rand = new Random();
@@ -37,6 +29,9 @@ namespace Prototype
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             Services.AddService(typeof(ContentManager), Content);
+
+            world = new World(new Vector2(0, 9.82f));
+            Services.AddService(typeof(World), world);
 
             graphics.IsFullScreen = false;
 
@@ -52,14 +47,14 @@ namespace Prototype
                 graphics.PreferredBackBufferWidth = 1920;
                 graphics.PreferredBackBufferHeight = 1080;
             }
-            
-            
-            IsFixedTimeStep = true;
-            graphics.SynchronizeWithVerticalRetrace = true;
 
+
+            IsFixedTimeStep = false;
+            graphics.SynchronizeWithVerticalRetrace = false;
             IsMouseVisible = true;
 
             ConvertUnits.SetDisplayUnitToSimUnitRatio(64f);
+            
 
         }
 
@@ -75,10 +70,10 @@ namespace Prototype
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             Services.AddService(typeof(SpriteBatch), spriteBatch);   
-
            
             screenManager = new ScreenManager(this);
             Components.Add(screenManager);
+
 
             base.Initialize();
         }
@@ -89,8 +84,7 @@ namespace Prototype
         /// </summary>
         protected override void LoadContent()
         {
-           
-            
+            screenManager.AddScreen(new Level1());
 
             // TODO: use this.Content to load your game content here
         }

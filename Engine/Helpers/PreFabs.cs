@@ -1,11 +1,12 @@
 ﻿using Engine.Components;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace Engine.Helpers
 {
     public static class PreFabs
     {
-        public static void LoadContent_ParticleEffects(ParticleManager particleManager)
+        public static void Initialize_ParticleEffects(ParticleManager particleManager)
         {
             particleManager.AddParticleEffect("Smoke");
             particleManager.AddParticleEffect("Spark");
@@ -16,7 +17,7 @@ namespace Engine.Helpers
         /// Initialize Predefined Particle Effects
         /// </summary>
         /// <param name="particleManager"></param>
-        public static void Initialize_ParticleEffects(ParticleManager particleManager)
+        public static void LoadContent_ParticleEffects(ParticleManager particleManager)
         {
 
             particleManager["Smoke"].MinInitialSpeed = 5;
@@ -48,6 +49,12 @@ namespace Engine.Helpers
             particleManager["Spark"].MinDirection = 0;
             particleManager["Spark"].MaxDirection = 360;
             particleManager["Spark"].Acceleration = new Vector2(0, 100);
+        }
+
+        public static void Initialize_Input(InputManger inputManager)
+        {
+            inputManager.AddAction("Next");
+            inputManager["Next"].Add(Keys.Space);
         }
     }
 }
