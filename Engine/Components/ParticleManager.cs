@@ -13,7 +13,7 @@ namespace Engine.Components
         int NumberOfEffects { get; }
     }
 
-    public class ParticleManager : GameComponent, IParticleManager
+    public class ParticleManager : IParticleManager
     {
         List<ParticleEffect> particleEffects = new List<ParticleEffect>();
        
@@ -49,23 +49,15 @@ namespace Engine.Components
 
         #endregion
 
-        public ParticleManager(Game game) 
-            : base(game)
-        {
-            game.Services.AddService(typeof(IParticleManager), this);
 
-        }
-
-        public override void Initialize()
+        public  void Initialize(Game game)
         {
             // Here is a good place to grab services needed for this Manager
 
             foreach (ParticleEffect particleEffect in particleEffects)
             {
-                particleEffect.Initialize(Game);
+                particleEffect.Initialize(game);
             }
-
-            base.Initialize();
         }
 
         /// <summary>
@@ -90,14 +82,13 @@ namespace Engine.Components
             particleEffects.Add(new ParticleEffect(particleEffectName));
         }
 
-        public override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             // Loops through and updates all the Particle Effects
             foreach (ParticleEffect effect in particleEffects)
             {
                 effect.Update(gameTime);
             }
-            base.Update(gameTime);
         }
 
     }

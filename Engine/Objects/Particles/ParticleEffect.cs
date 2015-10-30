@@ -118,9 +118,9 @@ namespace Engine.Objects
             Texture = content.Load<Texture2D>(@"defaultParticle");
         }
 
-        public void AddEmitter(ParticleEmitter emitter)
+        public void AddEmitter(ParticleEmitter emitter, ObjectManager objectManager)
         {
-            emitter.Initialize(game, this);
+            emitter.Initialize(this, objectManager);
 
             for (int i = 0; i < emitter.ParticlesPerSecond; i++)
             {

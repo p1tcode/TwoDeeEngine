@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics;
+using System.Diagnostics;
 
 namespace Engine.Objects
 {
@@ -122,15 +123,7 @@ namespace Engine.Objects
 
         public virtual void Draw(SpriteBatch spriteBatch)
         {
-            /*if (Body == null)
-            {
-                spriteBatch.Draw(this.Texture, this.Position, this.SourceRect, this.Color, this.Rotation, this.Origin, this.Scale, this.SpriteEffect, 0);
-            }
-            else
-            {*/
-                spriteBatch.Draw(this.Texture, ConvertUnits.ToDisplayUnits(this.Position), this.SourceRect, this.Color, this.Rotation, this.Origin, this.Scale, this.SpriteEffect, 0);
-            //}
-            
+            spriteBatch.Draw(this.Texture, this.Position, this.SourceRect, this.Color, this.Rotation, this.Origin, this.Scale, this.SpriteEffect, 0);
         }
     }
 }

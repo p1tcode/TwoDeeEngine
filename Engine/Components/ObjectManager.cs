@@ -58,16 +58,10 @@ namespace Engine.Components
         {
             //game.Services.AddService(typeof(IObjectManager), this);
 
-            this.camera = (ICamera2D)game.Services.GetService(typeof(ICamera2D));
-            this.spriteBatch = (SpriteBatch)game.Services.GetService(typeof(SpriteBatch));
+            camera = (ICamera2D)game.Services.GetService(typeof(ICamera2D));
+            spriteBatch = (SpriteBatch)game.Services.GetService(typeof(SpriteBatch));
 
-            // Add default layers
-            AddLayer("Background");
-            AddLayer("Player");
-            AddLayer("Foreground");
-            AddLayer("Debug");
-            AddLayer("Text");
-
+            PreFabs.Layers(this);
         }
 
 

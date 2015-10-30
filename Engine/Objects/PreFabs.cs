@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace Engine.Helpers
+namespace Engine.Objects
 {
     public static class PreFabs
     {
@@ -11,14 +11,6 @@ namespace Engine.Helpers
             particleManager.AddParticleEffect("Smoke");
             particleManager.AddParticleEffect("Spark");
             particleManager.AddParticleEffect("Fire");
-        }
-
-        /// <summary>
-        /// Initialize Predefined Particle Effects
-        /// </summary>
-        /// <param name="particleManager"></param>
-        public static void LoadContent_ParticleEffects(ParticleManager particleManager)
-        {
 
             particleManager["Smoke"].MinInitialSpeed = 5;
             particleManager["Smoke"].MaxInitialSpeed = 10;
@@ -55,6 +47,16 @@ namespace Engine.Helpers
         {
             inputManager.AddAction("Next");
             inputManager["Next"].Add(Keys.Space);
+        }
+
+        public static void Layers(ObjectManager objectManager)
+        {
+            // Add default layers
+            objectManager.AddLayer("Background");
+            objectManager.AddLayer("Player");
+            objectManager.AddLayer("Foreground");
+            objectManager.AddLayer("Debug");
+            objectManager.AddLayer("Text");
         }
     }
 }

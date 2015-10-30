@@ -126,7 +126,8 @@ namespace Engine.Components
                 {
                     if (item.Alive)
                     {
-                        spriteBatch.Draw(item.Texture, item.Position, item.SourceRect, item.Color, item.Rotation, item.Origin, item.Scale, item.SpriteEffect, 0);
+                        //spriteBatch.Draw(item.Texture, item.Position, item.SourceRect, item.Color, item.Rotation, item.Origin, item.Scale, item.SpriteEffect, 0);
+                        item.Draw(spriteBatch);
                         visibleSprites++;
                     }
                 }

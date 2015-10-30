@@ -17,7 +17,7 @@ namespace Engine.Components
         void MouseGrabSprite(Sprite sprite, string action);
     }
 
-    public class InputManger : GameComponent, IInputManager
+    public class InputManger : IInputManager
     {
         List<Action> actions = new List<Action>();
 
@@ -103,7 +103,6 @@ namespace Engine.Components
         }
 
         public InputManger(Game game)
-            : base(game)
         {
             game.Services.AddService(typeof(IInputManager), this);
 
@@ -125,12 +124,11 @@ namespace Engine.Components
             this["Down"].Add(Buttons.DPadDown);
         }
 
-        public override void Initialize()
+        public void Initialize(Game game)
         {
             // Here is a good place to grab services.
-            camera = (ICamera2D)Game.Services.GetService(typeof(ICamera2D));
+            this.camera = (ICamera2D)game.Services.GetService(typeof(ICamera2D));
 
-            base.Initialize();
         }
 
         /// <summary>
@@ -161,7 +159,7 @@ namespace Engine.Components
         /// Update all actions
         /// </summary>
         /// <param name="gameTime"></param>
-        public override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             kbState = Keyboard.GetState();
             msState = Mouse.GetState();
@@ -174,8 +172,6 @@ namespace Engine.Components
             {
                 a.Update(kbState, msState, gpState);
             }
-            
-            base.Update(gameTime);
         }
 
 

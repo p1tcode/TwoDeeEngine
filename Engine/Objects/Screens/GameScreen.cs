@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Engine.Components;
+using Engine.Objects;
+
+
 
 namespace Engine.Objects
 {
@@ -77,10 +80,26 @@ namespace Engine.Objects
         }
         ObjectManager objectManager;
 
+        /// <summary>
+        /// ParticleManager
+        /// </summary>
+        public ParticleManager ParticleManager
+        {
+            get { return particleManager; }
+            protected set { particleManager = value; }
+        }
+        ParticleManager particleManager;
+
 
         public void Initialize()
         {
             objectManager = new ObjectManager(screenManager.Game);
+            // Load particleManager
+            particleManager = new ParticleManager();
+            particleManager.Initialize(screenManager.Game);
+            PreFabs.Initialize_ParticleEffects(particleManager);
+
+            ScreenManager.World.Clear();
         }
 
         public virtual void LoadContent() { }
@@ -88,6 +107,7 @@ namespace Engine.Objects
         public virtual void UnloadContent()
         {
             objectManager = null;
+            particleManager = null;
         }
 
         public virtual void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
@@ -109,6 +129,10 @@ namespace Engine.Objects
                 if (objectManager != null)
                 {
                     objectManager.Update(gameTime);
+                }
+                if (particleManager != null)
+                {
+                    particleManager.Update(gameTime);
                 }
             }
 

@@ -2,10 +2,11 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Engine.Components;
+using FarseerPhysics;
 
 namespace Engine
 {
-    interface ICamera2D
+    interface ICamera2Dp
     {
         bool IsInView(Vector2 position, Texture2D texture);
         void JumpToTarget(Vector2 Position);
@@ -22,7 +23,7 @@ namespace Engine
         float Speed { get; set; }
     }
 
-    public class Camera2D : ICamera2D
+    public class Camera2Dp : ICamera2Dp
     {
         #region Properties
 
@@ -32,7 +33,8 @@ namespace Engine
         private Vector2 currentPosition;
         public Vector2 Position
         {
-            get { return currentPosition; }
+            get { return ConvertUnits.ToDisplayUnits(currentPosition); }
+            set { currentPosition = ConvertUnits.ToSimUnits(value); }
         }
 
         /// <summary>
@@ -95,14 +97,14 @@ namespace Engine
         private Matrix projection;
 
      
-        public Camera2D(Game game, int viewPortWidth, int viewPortHeight)
+        public Camera2Dp(Game game, int viewPortWidth, int viewPortHeight)
         {   
-            this.viewPort = new Vector2(viewPortWidth, viewPortHeight);
+            this.viewPort = new Vector2(ConvertUnits.ToSimUnits(viewPortWidth), ConvertUnits.ToSimUnits(viewPortHeight));
             this.screenCenter = new Vector2(viewPort.X / 2, viewPort.Y / 2);
-            this.origin = screenCenter / scale;
-            this.projection = Matrix.CreateOrthographicOffCenter(0, viewPortWidth, viewPortHeight, 0, 0, 1);
+            this.origin = screenCenter / ConvertUnits.ToSimUnits(scale);
+            this.projection = Matrix.CreateOrthographicOffCenter(0, ConvertUnits.ToSimUnits(viewPortWidth), ConvertUnits.ToSimUnits(viewPortHeight), 0, 0, 1);
 
-            game.Services.AddService(typeof(ICamera2D), this);
+            game.Services.AddService(typeof(ICamera2Dp), this);
         }
 
 
@@ -120,10 +122,10 @@ namespace Engine
             this.currentPosition = new Vector2(MathHelper.Lerp(this.currentPosition.X, this.targetPosition.X, this.speed * elapsedTime), MathHelper.Lerp(this.currentPosition.Y, this.targetPosition.Y, this.speed * elapsedTime));
 
             this.view = Matrix.Identity *
-                             Matrix.CreateTranslation(-currentPosition.X, -currentPosition.Y, 0) *
+                             Matrix.CreateTranslation(-currentPosition.X,-currentPosition.Y, 0) *
                              Matrix.CreateRotationZ(rotation) *
                              Matrix.CreateTranslation(origin.X, origin.Y, 0) *
-                             Matrix.CreateScale(new Vector3(scale, scale, 0));
+                             Matrix.CreateScale(new Vector3(ConvertUnits.ToDisplayUnits(scale), ConvertUnits.ToDisplayUnits(scale), 0));
         }
 
         /// <summary>
@@ -133,7 +135,7 @@ namespace Engine
         /// <param name="position"></param>
         public void SetTarget(Vector2 position)
         {
-            targetPosition = position;
+            targetPosition = ConvertUnits.ToSimUnits(position);
         }
 
         /// <summary>
@@ -142,8 +144,8 @@ namespace Engine
         /// <param name="position"></param>
         public void JumpToTarget(Vector2 position)
         {
-            currentPosition = position;
-            targetPosition = position;
+            Position = position;
+            targetPosition = ConvertUnits.ToSimUnits(position);
         }
 
         /// <summary>

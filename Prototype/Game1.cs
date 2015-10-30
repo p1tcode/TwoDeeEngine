@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework.Content;
 using Engine.Components;
 using System;
 using FarseerPhysics;
-using FarseerPhysics.Dynamics;
 
 namespace Prototype
 {
@@ -17,10 +16,7 @@ namespace Prototype
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        World world;
         ScreenManager screenManager;
-
-        Random rand = new Random();
 
 
         public Game1()
@@ -29,9 +25,6 @@ namespace Prototype
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             Services.AddService(typeof(ContentManager), Content);
-
-            world = new World(new Vector2(0, 9.82f));
-            Services.AddService(typeof(World), world);
 
             graphics.IsFullScreen = false;
 
@@ -52,9 +45,6 @@ namespace Prototype
             IsFixedTimeStep = false;
             graphics.SynchronizeWithVerticalRetrace = false;
             IsMouseVisible = true;
-
-            ConvertUnits.SetDisplayUnitToSimUnitRatio(64f);
-            
 
         }
 

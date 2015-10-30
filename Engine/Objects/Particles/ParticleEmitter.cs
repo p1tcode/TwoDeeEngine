@@ -28,7 +28,7 @@ namespace Engine.Objects
         float timeSinceLastParticle;
 
         public ParticleEffect Effect;
-        IObjectManager objectManager;
+        ObjectManager objectManager;
 
         /// <summary>
         /// Return the number of particles in the current emitter
@@ -71,10 +71,10 @@ namespace Engine.Objects
             Continous = continous;
         }
 
-        public void Initialize(Game game, ParticleEffect effect)
+        public void Initialize(ParticleEffect effect, ObjectManager objectManager)
         {
             Effect = effect;
-            objectManager = (IObjectManager)game.Services.GetService(typeof(IObjectManager));
+            this.objectManager = objectManager;
         }
 
         /// <summary>
@@ -196,8 +196,6 @@ namespace Engine.Objects
                             trigger = false;
                             elapsedTime = 0;
                         }
-                        
-                    
                     }
                 }
             }
