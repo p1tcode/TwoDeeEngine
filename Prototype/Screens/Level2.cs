@@ -23,6 +23,8 @@ namespace Prototype
             player.Position = new Vector2(100, 100);
             ObjectManager["Player"].Add(player);
 
+            ScreenManager.Camera.JumpToTarget(ScreenManager.Camera.Origin);
+
 
             base.LoadContent();
         }

@@ -96,8 +96,8 @@ namespace Engine.Objects
             objectManager = new ObjectManager(screenManager.Game);
             // Load particleManager
             particleManager = new ParticleManager();
-            particleManager.Initialize(screenManager.Game);
             PreFabs.Initialize_ParticleEffects(particleManager);
+            particleManager.Initialize(screenManager.Game);
 
             ScreenManager.World.Clear();
         }

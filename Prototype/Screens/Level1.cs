@@ -56,10 +56,10 @@ namespace Prototype
                 ObjectManager["Player"].Add(staticSprite);
             }
 
-            //emitterSmoke = new ParticleEmitter(Vector2.Zero, 1, "Foreground", true, false);
-            //ScreenManager.ParticleManager["Smoke"].AddEmitter(emitterSmoke, ObjectManager);
-            //emitterSpark = new ParticleEmitter(Vector2.Zero, 1, "Foreground", true, false);
-            //ScreenManager.ParticleManager["Spark"].AddEmitter(emitterSpark, ObjectManager);
+            emitterSmoke = new ParticleEmitter(Vector2.Zero, 1, "Foreground", true, false);
+            ParticleManager["Smoke"].AddEmitter(emitterSmoke, ObjectManager);
+            emitterSpark = new ParticleEmitter(Vector2.Zero, 1, "Foreground", true, false);
+            ParticleManager["Spark"].AddEmitter(emitterSpark, ObjectManager);
 
 
             base.LoadContent();
@@ -89,10 +89,40 @@ namespace Prototype
                 ObjectManager["Player"].Add(fallingSprite);
             }
 
-            ScreenManager.InputManager.MouseGrabWorld("CameraMove");            
+            ScreenManager.InputManager.MouseGrabWorld("CameraMove");
 
-            //Debug.WriteLine(ObjectManager.NumberOfSprites.ToString());
+            foreach (var item in ScreenManager.World.ContactList)
+            {
+                Vector2 normal;
+                FixedArray2<Vector2> worldPoints;
 
+
+                item.GetWorldManifold(out normal, out worldPoints);
+
+                emitterSmoke.Position = ConvertUnits.ToDisplayUnits(worldPoints[0]);
+                emitterSpark.Position = ConvertUnits.ToDisplayUnits(worldPoints[0]);
+
+                if ((item.FixtureA.Body.LinearVelocity.X > 1f) ||
+                    (item.FixtureA.Body.LinearVelocity.X < -1f) ||
+                    (item.FixtureA.Body.LinearVelocity.Y > 1f) ||
+                    (item.FixtureA.Body.LinearVelocity.Y < -1f))
+
+                {
+                    emitterSmoke.Trigger(0.01f);
+                }
+                if ((item.FixtureA.Body.LinearVelocity.X > 0.5f) ||
+                    (item.FixtureA.Body.LinearVelocity.X < -0.5f) ||
+                    (item.FixtureA.Body.LinearVelocity.Y > 0.5f) ||
+                    (item.FixtureA.Body.LinearVelocity.Y < -0.5f) ||
+                    (item.FixtureA.Body.AngularVelocity > 0.5f) ||
+                    (item.FixtureA.Body.AngularVelocity < -0.5f))
+
+                {
+                    emitterSpark.Trigger(0.2f);
+                }
+            }
+
+            Debug.WriteLine(string.Join(", ", ScreenManager.World.ContactList));
 
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
         }
