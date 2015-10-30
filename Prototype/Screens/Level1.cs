@@ -30,7 +30,7 @@ namespace Prototype
 
             for (int i = 0; i < 40; i++)
             {
-                Body body = BodyFactory.CreateRectangle(ScreenManager.World, tex.Width, tex.Height, 1);
+                Body body = BodyFactory.CreateRectangle(ScreenManager.World, ConvertUnits.ToSimUnits(tex.Width), ConvertUnits.ToSimUnits(tex.Height), 1);
                 Sprite staticSprite = new Sprite(tex, body);
                 staticSprite.Position = new Vector2(64 * i + 32, 1048);
                 staticSprite.Body.BodyType = BodyType.Static;
@@ -39,7 +39,7 @@ namespace Prototype
             }
             for (int i = 0; i < 25; i++)
             {
-                Body body = BodyFactory.CreateRectangle(ScreenManager.World, tex.Width, tex.Height, 1);
+                Body body = BodyFactory.CreateRectangle(ScreenManager.World, ConvertUnits.ToSimUnits(tex.Width), ConvertUnits.ToSimUnits(tex.Height), 1);
                 Sprite staticSprite = new Sprite(tex, body);
                 staticSprite.Position = new Vector2(32, 1048 - 64 * i);
                 staticSprite.Body.BodyType = BodyType.Static;
@@ -48,16 +48,13 @@ namespace Prototype
             }
             for (int i = 0; i < 25; i++)
             {
-                Body body = BodyFactory.CreateRectangle(ScreenManager.World, tex.Width, tex.Height, 1);
+                Body body = BodyFactory.CreateRectangle(ScreenManager.World, ConvertUnits.ToSimUnits(tex.Width), ConvertUnits.ToSimUnits(tex.Height), 1);
                 Sprite staticSprite = new Sprite(tex, body);
                 staticSprite.Position = new Vector2(29 * 64 + 32, 1048 - 64 * i);
                 staticSprite.Body.BodyType = BodyType.Static;
                 staticSprite.Body.Friction = 1f;
                 ObjectManager["Player"].Add(staticSprite);
             }
-
-            ScreenManager.InputManager.AddAction("Trigger");
-            ScreenManager.InputManager["Trigger"].Add(MouseButtons.Left);
 
             //emitterSmoke = new ParticleEmitter(Vector2.Zero, 1, "Foreground", true, false);
             //ScreenManager.ParticleManager["Smoke"].AddEmitter(emitterSmoke, ObjectManager);
@@ -84,13 +81,17 @@ namespace Prototype
             if (ScreenManager.InputManager["Trigger"].IsClicked)
             {
                 Texture2D tex = ScreenManager.Content.Load<Texture2D>(@"crate");
-                Body body = BodyFactory.CreateRectangle(ScreenManager.World, tex.Width, tex.Height, 1);
+                Body body = BodyFactory.CreateRectangle(ScreenManager.World, ConvertUnits.ToSimUnits(tex.Width), ConvertUnits.ToSimUnits(tex.Height), 1);
                 fallingSprite = new Sprite(tex, body);
                 fallingSprite.Position = ScreenManager.InputManager.MouseWorldPosition;
                 fallingSprite.Body.Friction = 1f;
                 fallingSprite.Body.BodyType = BodyType.Dynamic;
                 ObjectManager["Player"].Add(fallingSprite);
             }
+
+            ScreenManager.InputManager.MouseGrabWorld("CameraMove");            
+
+            //Debug.WriteLine(ObjectManager.NumberOfSprites.ToString());
 
 
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);

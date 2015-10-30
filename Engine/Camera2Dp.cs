@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Engine.Components;
 using FarseerPhysics;
+using System.Diagnostics;
 
 namespace Engine
 {
@@ -120,7 +121,7 @@ namespace Engine
             this.origin = screenCenter / scale;
 
             this.currentPosition = new Vector2(MathHelper.Lerp(this.currentPosition.X, this.targetPosition.X, this.speed * elapsedTime), MathHelper.Lerp(this.currentPosition.Y, this.targetPosition.Y, this.speed * elapsedTime));
-
+ 
             this.view = Matrix.Identity *
                              Matrix.CreateTranslation(-currentPosition.X,-currentPosition.Y, 0) *
                              Matrix.CreateRotationZ(rotation) *

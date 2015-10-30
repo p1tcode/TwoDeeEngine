@@ -42,9 +42,11 @@ namespace Prototype
             }
 
 
-            IsFixedTimeStep = false;
+            IsFixedTimeStep = true;
             graphics.SynchronizeWithVerticalRetrace = false;
             IsMouseVisible = true;
+
+            ConvertUnits.SetDisplayUnitToSimUnitRatio(24f);
 
         }
 

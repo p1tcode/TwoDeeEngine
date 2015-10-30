@@ -23,7 +23,7 @@ namespace Engine.Objects
             {
                 if (Body != null)
                 {
-                    return Body.Position;
+                    return ConvertUnits.ToDisplayUnits(Body.Position);
                 }
                 else
                 {
@@ -34,7 +34,7 @@ namespace Engine.Objects
             {
                 if (Body != null)
                 {
-                    Body.Position = value;
+                    Body.Position = ConvertUnits.ToSimUnits(value);
                 }
                 else
                 {
@@ -116,14 +116,14 @@ namespace Engine.Objects
         {
             if (Body != null)
             {
-                this.Position = Body.Position;
+                //this.Position = Body.Position;
                 this.Rotation = Body.Rotation;
             }
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(this.Texture, this.Position, this.SourceRect, this.Color, this.Rotation, this.Origin, this.Scale, this.SpriteEffect, 0);
+            spriteBatch.Draw(this.Texture, Position, this.SourceRect, this.Color, this.Rotation, this.Origin, this.Scale, this.SpriteEffect, 0);
         }
     }
 }

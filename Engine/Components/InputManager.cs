@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Engine.Objects;
+using FarseerPhysics;
 
 namespace Engine.Components
 {

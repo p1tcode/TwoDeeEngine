@@ -47,6 +47,10 @@ namespace Engine.Objects
         {
             inputManager.AddAction("Next");
             inputManager["Next"].Add(Keys.Space);
+            inputManager.AddAction("Trigger");
+            inputManager["Trigger"].Add(MouseButtons.Left);
+            inputManager.AddAction("CameraMove");
+            inputManager["CameraMove"].Add(MouseButtons.Right);
         }
 
         public static void Layers(ObjectManager objectManager)

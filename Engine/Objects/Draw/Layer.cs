@@ -108,7 +108,6 @@ namespace Engine.Components
             {
                 if (!(item is Particle))
                 {
-
                     item.Update(gameTime);
                 }
             }

@@ -84,6 +84,7 @@ namespace Engine.Components
             // Load Camera
             camera = new Camera2D(game, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
             camera.JumpToTarget(camera.Origin);
+            camera.Scale = 1f;
         }
 
 
@@ -93,7 +94,7 @@ namespace Engine.Components
             content = (ContentManager)Game.Services.GetService(typeof(ContentManager));
             
             // Load physics world
-            world = new World(new Vector2(0, 981f));
+            world = new World(new Vector2(0, 9.81f));
 
             // Load input manager
             inputManager = new InputManger(this.Game);

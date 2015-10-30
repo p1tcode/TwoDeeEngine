@@ -40,7 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Camera2D.cs" />
-    <Compile Include="Camera2Dp.cs" />
     <Compile Include="Components\ObjectManager.cs" />
     <Compile Include="Components\ParticleManager.cs" />
     <Compile Include="Components\ScreenManager.cs" />
