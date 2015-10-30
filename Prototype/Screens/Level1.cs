@@ -121,9 +121,7 @@ namespace Prototype
                     emitterSpark.Trigger(0.2f);
                 }
             }
-
-            Debug.WriteLine(string.Join(", ", ScreenManager.World.ContactList));
-
+            
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
         }
     }

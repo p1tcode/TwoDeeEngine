@@ -6,12 +6,16 @@ using System.Threading.Tasks;
 using Engine.Objects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using FarseerPhysics;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
 
 namespace Prototype
 {
     class Level2 : GameScreen
     {
         Sprite player;
+        Sprite fallingSprite;
 
         public Level2()
         {
@@ -36,6 +40,19 @@ namespace Prototype
                 ScreenManager.RemoveScreen(this);
                 ScreenManager.AddScreen(new Level1());
             }
+
+            if (ScreenManager.InputManager["Trigger"].IsClicked)
+            {
+                Texture2D tex = ScreenManager.Content.Load<Texture2D>(@"crate");
+                Body body = BodyFactory.CreateRectangle(ScreenManager.World, ConvertUnits.ToSimUnits(tex.Width), ConvertUnits.ToSimUnits(tex.Height), 1);
+                fallingSprite = new Sprite(tex, body);
+                fallingSprite.Position = ScreenManager.InputManager.MouseWorldPosition;
+                fallingSprite.Body.Friction = 1f;
+                fallingSprite.Body.BodyType = BodyType.Dynamic;
+                ObjectManager["Player"].Add(fallingSprite);
+            }
+
+            ScreenManager.InputManager.MouseGrabWorld("CameraMove");
 
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
         }
