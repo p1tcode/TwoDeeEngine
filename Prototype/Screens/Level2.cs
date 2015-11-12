@@ -41,6 +41,7 @@ namespace Prototype
                 ScreenManager.AddScreen(new Level1());
             }
 
+            
             if (ScreenManager.InputManager["Trigger"].IsClicked)
             {
                 Texture2D tex = ScreenManager.Content.Load<Texture2D>(@"crate");

@@ -87,6 +87,7 @@ namespace Prototype
         /// </summary>
         protected override void UnloadContent()
         {
+            Console.WriteLine("Quitting App!");
             // TODO: Unload any non ContentManager content here
         }
 

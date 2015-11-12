@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Engine.Objects;
+using Engine.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -23,12 +24,20 @@ namespace Prototype
         ParticleEmitter emitterSpark;
 
         Sprite fallingSprite;
+        Sprite videoStream;
+
+        KinectManager kinectManager;
 
         public override void LoadContent()
         {
+            kinectManager = new KinectManager(ScreenManager.Game);
+            videoStream = new Sprite(kinectManager.VideoStream);
+            videoStream.Position = new Vector2(kinectManager.VideoStream.Width / 2, kinectManager.VideoStream.Height / 2);
+            ObjectManager["Background"].Add(videoStream);
+
             Texture2D tex = ScreenManager.Content.Load<Texture2D>(@"crate");
 
-            for (int i = 0; i < 40; i++)
+            for (int i = 0; i < 30; i++)
             {
                 Body body = BodyFactory.CreateRectangle(ScreenManager.World, ConvertUnits.ToSimUnits(tex.Width), ConvertUnits.ToSimUnits(tex.Height), 1);
                 Sprite staticSprite = new Sprite(tex, body);
@@ -56,6 +65,7 @@ namespace Prototype
                 ObjectManager["Player"].Add(staticSprite);
             }
 
+
             emitterSmoke = new ParticleEmitter(Vector2.Zero, 1, "Foreground", true, false);
             ParticleManager["Smoke"].AddEmitter(emitterSmoke, ObjectManager);
             emitterSpark = new ParticleEmitter(Vector2.Zero, 1, "Foreground", true, false);
@@ -63,6 +73,15 @@ namespace Prototype
 
 
             base.LoadContent();
+        }
+
+        public override void UnloadContent()
+        {
+            kinectManager.UnloadContent();
+            
+            kinectManager = null;
+
+            base.UnloadContent();
         }
 
 
@@ -88,6 +107,7 @@ namespace Prototype
                 fallingSprite.Body.BodyType = BodyType.Dynamic;
                 ObjectManager["Player"].Add(fallingSprite);
             }
+
 
             ScreenManager.InputManager.MouseGrabWorld("CameraMove");
 
@@ -120,6 +140,11 @@ namespace Prototype
                 {
                     emitterSpark.Trigger(0.2f);
                 }
+            }
+
+            if (kinectManager != null)
+            {
+                videoStream.Texture = kinectManager.VideoStream;
             }
             
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
