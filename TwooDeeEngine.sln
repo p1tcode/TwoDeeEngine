@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prototype", "Prototype\Prototype.csproj", "{2AB8A769-4783-44FF-8696-9173F492B61E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine", "Engine\Engine.csproj", "{AEEDDDA4-2D62-4690-92C7-33B4AA879881}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharacterEditor", "CharacterEditor\CharacterEditor.csproj", "{5B1E4FCD-30AC-4C41-A20F-484D76FAAABF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +39,16 @@ Global
 		{AEEDDDA4-2D62-4690-92C7-33B4AA879881}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{AEEDDDA4-2D62-4690-92C7-33B4AA879881}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{AEEDDDA4-2D62-4690-92C7-33B4AA879881}.Release|x86.ActiveCfg = Release|Any CPU
+		{5B1E4FCD-30AC-4C41-A20F-484D76FAAABF}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{5B1E4FCD-30AC-4C41-A20F-484D76FAAABF}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{5B1E4FCD-30AC-4C41-A20F-484D76FAAABF}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{5B1E4FCD-30AC-4C41-A20F-484D76FAAABF}.Debug|x86.ActiveCfg = Debug|x86
+		{5B1E4FCD-30AC-4C41-A20F-484D76FAAABF}.Debug|x86.Build.0 = Debug|x86
+		{5B1E4FCD-30AC-4C41-A20F-484D76FAAABF}.Release|Any CPU.ActiveCfg = Release|x86
+		{5B1E4FCD-30AC-4C41-A20F-484D76FAAABF}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{5B1E4FCD-30AC-4C41-A20F-484D76FAAABF}.Release|Mixed Platforms.Build.0 = Release|x86
+		{5B1E4FCD-30AC-4C41-A20F-484D76FAAABF}.Release|x86.ActiveCfg = Release|x86
+		{5B1E4FCD-30AC-4C41-A20F-484D76FAAABF}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

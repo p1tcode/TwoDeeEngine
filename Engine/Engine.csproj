@@ -38,7 +38,10 @@
       <HintPath>..\packages\Microsoft.Kinect.2.0.1410.19000\lib\net45\Microsoft.Kinect.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MonoGame.Framework, Version=3.4.0.456, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="MonoGame.Framework, Version=3.6.0.57, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -48,6 +51,8 @@
     <Compile Include="Components\ObjectManager.cs" />
     <Compile Include="Components\ParticleManager.cs" />
     <Compile Include="Components\ScreenManager.cs" />
+    <Compile Include="Objects\Kinect\Hand.cs" />
+    <Compile Include="Objects\Kinect\Skeleton.cs" />
     <Compile Include="Objects\PreFabs.cs" />
     <Compile Include="Objects\Draw\Animation.cs" />
     <Compile Include="Objects\Draw\Layer.cs" />

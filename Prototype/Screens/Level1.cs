@@ -24,16 +24,18 @@ namespace Prototype
         ParticleEmitter emitterSpark;
 
         Sprite fallingSprite;
-        Sprite videoStream;
+        //Sprite videoStream;
 
-        KinectManager kinectManager;
+        float elpsedTime = 0;
+
+        //KinectManager kinectManager;
 
         public override void LoadContent()
         {
-            kinectManager = new KinectManager(ScreenManager.Game);
-            videoStream = new Sprite(kinectManager.VideoStream);
-            videoStream.Position = new Vector2(kinectManager.VideoStream.Width / 2, kinectManager.VideoStream.Height / 2);
-            ObjectManager["Background"].Add(videoStream);
+            //kinectManager = new KinectManager(ScreenManager.Game);
+            //videoStream = new Sprite(kinectManager.VideoStream);
+            //videoStream.Position = new Vector2(kinectManager.VideoStream.Width / 2, kinectManager.VideoStream.Height / 2);
+            //ObjectManager["Background"].Add(videoStream);
 
             Texture2D tex = ScreenManager.Content.Load<Texture2D>(@"crate");
 
@@ -71,15 +73,14 @@ namespace Prototype
             emitterSpark = new ParticleEmitter(Vector2.Zero, 1, "Foreground", true, false);
             ParticleManager["Spark"].AddEmitter(emitterSpark, ObjectManager);
 
-
             base.LoadContent();
         }
 
         public override void UnloadContent()
         {
-            kinectManager.UnloadContent();
+            //kinectManager.UnloadContent();
             
-            kinectManager = null;
+            //kinectManager = null;
 
             base.UnloadContent();
         }
@@ -87,6 +88,8 @@ namespace Prototype
 
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
+            elpsedTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             Debug.WriteLine(coveredByOtherScreen);
             if (!otherScreenHasFocus)
             {
@@ -94,6 +97,38 @@ namespace Prototype
                 {
                     ScreenManager.RemoveScreen(this);
                     ScreenManager.AddScreen(new Level2());
+                }
+            }
+
+            ScreenManager.InputManager.MouseGrabWorld("CameraMove");
+
+            foreach (var item in ScreenManager.World.ContactList)
+            {
+                Vector2 normal;
+                FixedArray2<Vector2> worldPoints;
+
+
+                item.GetWorldManifold(out normal, out worldPoints);
+
+                if ((item.FixtureA.Body.LinearVelocity.X > 1f) ||
+                    (item.FixtureA.Body.LinearVelocity.X < -1f) ||
+                    (item.FixtureA.Body.LinearVelocity.Y > 1f) ||
+                    (item.FixtureA.Body.LinearVelocity.Y < -1f))
+
+                {
+                    emitterSmoke.Position = ConvertUnits.ToDisplayUnits(worldPoints[0]);
+                    emitterSmoke.Trigger(0.01f);
+                }
+                if ((item.FixtureA.Body.LinearVelocity.X > 1f) ||
+                    (item.FixtureA.Body.LinearVelocity.X < -1f) ||
+                    (item.FixtureA.Body.LinearVelocity.Y > 1f) ||
+                    (item.FixtureA.Body.LinearVelocity.Y < -1f) ||
+                    (item.FixtureA.Body.AngularVelocity > 1f) ||
+                    (item.FixtureA.Body.AngularVelocity < -1f))
+
+                {
+                    emitterSpark.Position = ConvertUnits.ToDisplayUnits(worldPoints[0]);
+                    emitterSpark.Trigger(0.2f);
                 }
             }
 
@@ -108,45 +143,42 @@ namespace Prototype
                 ObjectManager["Player"].Add(fallingSprite);
             }
 
-
-            ScreenManager.InputManager.MouseGrabWorld("CameraMove");
-
-            foreach (var item in ScreenManager.World.ContactList)
-            {
-                Vector2 normal;
-                FixedArray2<Vector2> worldPoints;
-
-
-                item.GetWorldManifold(out normal, out worldPoints);
-
-                emitterSmoke.Position = ConvertUnits.ToDisplayUnits(worldPoints[0]);
-                emitterSpark.Position = ConvertUnits.ToDisplayUnits(worldPoints[0]);
-
-                if ((item.FixtureA.Body.LinearVelocity.X > 1f) ||
-                    (item.FixtureA.Body.LinearVelocity.X < -1f) ||
-                    (item.FixtureA.Body.LinearVelocity.Y > 1f) ||
-                    (item.FixtureA.Body.LinearVelocity.Y < -1f))
-
-                {
-                    emitterSmoke.Trigger(0.01f);
-                }
-                if ((item.FixtureA.Body.LinearVelocity.X > 0.5f) ||
-                    (item.FixtureA.Body.LinearVelocity.X < -0.5f) ||
-                    (item.FixtureA.Body.LinearVelocity.Y > 0.5f) ||
-                    (item.FixtureA.Body.LinearVelocity.Y < -0.5f) ||
-                    (item.FixtureA.Body.AngularVelocity > 0.5f) ||
-                    (item.FixtureA.Body.AngularVelocity < -0.5f))
-
-                {
-                    emitterSpark.Trigger(0.2f);
-                }
-            }
-
+            /*
             if (kinectManager != null)
             {
                 videoStream.Texture = kinectManager.VideoStream;
+                foreach (Skeleton skeleton in kinectManager.Skeletons)
+                {
+                    if (skeleton != null)
+                    {
+                        if (skeleton.LeftHand.IsClosing)
+                        {
+                            Texture2D tex = ScreenManager.Content.Load<Texture2D>(@"crate");
+                            Body body = BodyFactory.CreateRectangle(ScreenManager.World, ConvertUnits.ToSimUnits(tex.Width), ConvertUnits.ToSimUnits(tex.Height), 1);
+                            fallingSprite = new Sprite(tex, body);
+                            fallingSprite.Position = skeleton.LeftHand.Position;
+                            fallingSprite.Body.Friction = 1f;
+                            fallingSprite.Body.BodyType = BodyType.Dynamic;
+                            ObjectManager["Player"].Add(fallingSprite);
+                        }
+
+                        if (skeleton.RightHand.IsClosing)
+                        {
+                            Texture2D tex = ScreenManager.Content.Load<Texture2D>(@"crate");
+                            Body body = BodyFactory.CreateRectangle(ScreenManager.World, ConvertUnits.ToSimUnits(tex.Width), ConvertUnits.ToSimUnits(tex.Height), 1);
+                            fallingSprite = new Sprite(tex, body);
+                            fallingSprite.Position = skeleton.RightHand.Position;
+                            fallingSprite.Body.Friction = 1f;
+                            fallingSprite.Body.BodyType = BodyType.Dynamic;
+                            ObjectManager["Player"].Add(fallingSprite);
+                        }
+
+                    }
+                    
+                }
             }
-            
+            */
+
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
         }
     }
